@@ -3,157 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema FINANCIERO V24 - Élite Reparado</title>
+    <title>Sistema FINANCIERO V26 - Definitivo</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- LIBRERÍAS DE FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- TAILWIND CSS (Solo para utilidades menores) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: '#50a38d', brandDark: '#153e36' },
-                    animation: { 'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', },
-                    keyframes: { pop: { '0%': { transform: 'scale(0.95)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' }, } }
-                }
-            }
-        }
-    </script>
 
-    <style type="text/tailwindcss">
-        @layer base { body { @apply bg-gray-100 text-gray-800 overflow-x-hidden pb-24 font-sans; } }
-        @layer components {
-            .oculto { @apply hidden !important; }
-            .input-group { @apply bg-white border border-gray-200 rounded-xl flex items-center mb-3 overflow-hidden transition-all duration-300 focus-within:border-brand focus-within:shadow-md; }
-            .input-group input, .input-group select, .input-group textarea { @apply flex-1 border-none p-3 text-sm outline-none bg-transparent w-full; }
-            .input-group i { @apply px-4 text-gray-400; }
-            .btn-main { @apply w-full bg-brand text-white p-3 rounded-xl font-bold text-sm cursor-pointer flex justify-center items-center gap-2 transition-all duration-200 active:scale-95 shadow-sm; }
-            .btn-outline { @apply bg-transparent text-brand border-2 border-brand p-3 rounded-xl font-bold w-full cursor-pointer flex justify-center items-center gap-2 transition-all duration-200 active:scale-95; }
-            .btn-danger { @apply bg-red-500 text-white border-none py-2 px-4 rounded-xl font-bold cursor-pointer transition-all duration-200 active:scale-95; }
-            .card { @apply bg-white rounded-2xl p-4 shadow-sm mb-4 transition-all duration-300; }
-            .fullscreen-modal { @apply hidden fixed inset-0 w-full h-full bg-gray-100 z-[100] overflow-y-auto flex-col; }
-            .modal-header { @apply bg-white p-4 flex items-center gap-4 text-lg text-brandDark border-b border-gray-100 sticky top-0 z-10 font-bold justify-between shadow-sm; }
-            .header-bg { @apply bg-gradient-to-br from-brandDark to-brand text-white pt-8 pb-10 px-5 rounded-b-3xl shadow-lg; }
-            .search-bar { @apply bg-white/20 rounded-full px-5 py-3 text-white w-full border-none outline-none mt-3 text-sm transition-all focus:bg-white/30; }
-            .search-bar::placeholder { @apply text-white/70; }
-            .tabs-pills { @apply flex gap-2 my-3 overflow-x-auto pb-1; }
-            .tab-pill { @apply px-4 py-2 rounded-full text-xs font-bold border border-gray-200 bg-white text-gray-500 cursor-pointer whitespace-nowrap transition-all duration-300; }
-            .tab-pill.active { @apply bg-brand text-white border-brand !important; }
-            .actions-grid { @apply grid grid-cols-4 gap-3 mb-4; }
-            .action-card { @apply bg-white rounded-xl py-3 px-1 text-center border border-gray-100 flex flex-col items-center cursor-pointer shadow-sm transition-all duration-200 active:scale-95 hover:-translate-y-1; }
-            .action-card i { @apply text-2xl mb-1; }
-            .action-card span { @apply text-[10px] font-bold; }
-            .bottom-nav { @apply bg-white fixed bottom-0 w-full py-3 px-4 flex justify-around border-t border-gray-200 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]; }
-            .nav-item { @apply text-gray-400 text-xl cursor-pointer flex flex-col items-center gap-1 transition-colors duration-300; }
-            .nav-item span { @apply text-[10px] font-bold; }
-            .nav-item.active { @apply text-brandDark; }
-            .fab { @apply fixed bottom-20 right-5 bg-brand text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg z-[60] cursor-pointer transition-all duration-300 active:scale-90 hover:-translate-y-1; }
-            .canvas-firma { @apply border-2 border-dashed border-brand rounded-xl bg-white cursor-crosshair touch-none w-full mb-3 h-32; }
-            .alerta { @apply p-3 mb-3 rounded-xl text-xs border-l-4 transition-all duration-300; }
-            .a-rojo { @apply bg-red-50 border-red-500 text-red-600; }
-            .a-nar { @apply bg-yellow-50 border-yellow-500 text-yellow-700; }
-            .a-ver { @apply bg-teal-50 border-teal-500 text-teal-900; }
-            .switch { @apply relative inline-block w-10 h-5; }
-            .switch input { @apply opacity-0 w-0 h-0; }
-            .slider { @apply absolute cursor-pointer inset-0 bg-gray-300 transition-colors duration-300 rounded-full; }
-            .slider:before { @apply absolute content-[''] h-4 w-4 left-[2px] bottom-[2px] bg-white transition-transform duration-300 rounded-full shadow-sm; }
-            input:checked + .slider { @apply bg-brand; }
-            input:checked + .slider:before { @apply translate-x-[20px]; }
-            .lista-negra { @apply border-2 border-red-500 bg-red-50 !important; }
-            .lista-legal { @apply border-2 border-yellow-500 bg-yellow-50 !important; }
-            .qr-code { @apply w-32 h-32 mx-auto my-3 block; }
-            .img-mini { @apply w-10 h-10 rounded object-cover shadow-sm; }
-            .logo-sys { @apply max-w-full object-contain drop-shadow-md; }
-            .floating-icon { @apply absolute text-brand/10 z-[0]; animation: floatUp linear infinite; }
-        }
-
-        #status-conexion { @apply fixed top-2 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-1 rounded-full text-[10px] font-bold z-[99999] shadow-md flex items-center gap-2 transition-opacity duration-300; }
+    <!-- CSS PURO Y ESTÁNDAR (Garantiza que no se rompan las ventanas en móviles) -->
+    <style>
+        body { background-color: #f3f4f6; color: #1f2937; overflow-x: hidden; padding-bottom: 6rem; font-family: system-ui, sans-serif; margin: 0; }
+        .oculto { display: none !important; }
+        
+        /* ESTA CLASE ES LA CLAVE PARA QUE NO SE VAYAN HACIA ABAJO */
+        .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: #f3f4f6; z-index: 100; overflow-y: auto; flex-direction: column; }
+        
+        .input-group { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; display: flex; align-items: center; margin-bottom: 0.75rem; overflow: hidden; transition: all 0.3s; }
+        .input-group:focus-within { border-color: #50a38d; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .input-group input, .input-group select, .input-group textarea { flex: 1; border: none; padding: 0.75rem; font-size: 0.875rem; outline: none; background: transparent; width: 100%; box-sizing: border-box; }
+        .input-group i { padding-left: 1rem; padding-right: 1rem; color: #9ca3af; }
+        
+        .btn-main { width: 100%; background: #50a38d; color: white; padding: 0.85rem; border-radius: 0.75rem; font-weight: bold; font-size: 0.875rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); border: none; }
+        .btn-main:active { transform: scale(0.95); }
+        .btn-outline { background: transparent; color: #50a38d; border: 2px solid #50a38d; padding: 0.85rem; border-radius: 0.75rem; font-weight: bold; width: 100%; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn-outline:active { transform: scale(0.95); }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-danger:active { transform: scale(0.95); }
+        
+        .card { background: white; border-radius: 1rem; padding: 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); margin-bottom: 1rem; transition: all 0.3s; }
+        
+        .modal-header { background: white; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; font-size: 1.125rem; color: #153e36; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 10; font-weight: bold; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .header-bg { background: linear-gradient(to bottom right, #153e36, #50a38d); color: white; padding: 2rem 1.25rem 2.5rem 1.25rem; border-radius: 0 0 1.5rem 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .search-bar { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; padding: 0.75rem 1.25rem; color: white; width: 100%; border: none; outline: none; margin-top: 0.75rem; font-size: 0.875rem; transition: all 0.3s; box-sizing: border-box; }
+        .search-bar:focus { background: rgba(255, 255, 255, 0.3); }
+        .search-bar::placeholder { color: rgba(255, 255, 255, 0.7); }
+        
+        .tabs-pills { display: flex; gap: 0.5rem; margin-top: 0.75rem; margin-bottom: 0.75rem; overflow-x: auto; padding-bottom: 0.25rem; }
+        .tab-pill { padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; border: 1px solid #e5e7eb; background: white; color: #6b7280; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
+        .tab-pill.active { background: #50a38d !important; color: white !important; border-color: #50a38d !important; }
+        
+        .actions-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+        .action-card { background: white; border-radius: 0.75rem; padding: 0.75rem 0.25rem; text-align: center; border: 1px solid #f3f4f6; display: flex; flex-direction: column; align-items: center; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); transition: all 0.2s; }
+        .action-card:active { transform: scale(0.95); }
+        .action-card i { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .action-card span { font-size: 0.625rem; font-weight: bold; }
+        
+        .bottom-nav { background: white; position: fixed; bottom: 0; left: 0; width: 100%; padding: 0.75rem 1rem; display: flex; justify-content: space-around; border-top: 1px solid #e5e7eb; z-index: 50; box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05); box-sizing: border-box; }
+        .nav-item { color: #9ca3af; font-size: 1.25rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; transition: color 0.3s; }
+        .nav-item span { font-size: 0.625rem; font-weight: bold; }
+        .nav-item.active { color: #153e36; }
+        
+        .fab { position: fixed; bottom: 5rem; right: 1.25rem; background: #50a38d; color: white; width: 3.5rem; height: 3.5rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 60; cursor: pointer; transition: all 0.3s; }
+        .canvas-firma { border: 2px dashed #50a38d; border-radius: 0.75rem; background: white; cursor: crosshair; touch-action: none; width: 100%; margin-bottom: 0.75rem; height: 8rem; }
+        
+        .alerta { padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.75rem; font-size: 0.75rem; border-left: 4px solid; transition: all 0.3s; }
+        .a-rojo { background: #fef2f2; border-color: #ef4444; color: #dc2626; }
+        .a-nar { background: #fefce8; border-color: #eab308; color: #a16207; }
+        .a-ver { background: #f0fdfa; border-color: #14b8a6; color: #134e4a; }
+        
+        .switch { position: relative; display: inline-block; width: 2.5rem; height: 1.25rem; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #d1d5db; transition: .4s; border-radius: 9999px; }
+        .slider:before { position: absolute; content: ""; height: 1rem; width: 1rem; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 9999px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        input:checked + .slider { background-color: #50a38d; }
+        input:checked + .slider:before { transform: translateX(1.25rem); }
+        
+        .lista-negra { border: 2px solid #ef4444 !important; background: #fef2f2 !important; }
+        .lista-legal { border: 2px solid #eab308 !important; background: #fefce8 !important; }
+        .qr-code { width: 8rem; height: 8rem; margin: 0.75rem auto; display: block; }
+        .img-mini { width: 2.5rem; height: 2.5rem; border-radius: 0.25rem; object-fit: cover; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .logo-sys { max-width: 100%; object-fit: contain; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07)); }
+        
+        .floating-icon { position: absolute; color: rgba(80, 163, 141, 0.1); z-index: 0; animation: floatUp linear infinite; }
+        #status-conexion { position: fixed; top: 0.5rem; left: 50%; transform: translateX(-50%); background: #ef4444; color: white; padding: 0.25rem 1rem; border-radius: 9999px; font-size: 0.625rem; font-weight: bold; z-index: 99999; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 0.5rem; transition: opacity 0.3s; }
+        
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes pop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes parpadeo { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .bell-ring { @apply text-yellow-400; animation: parpadeo 0.8s infinite; }
+        .bell-ring { color: #facc15; animation: parpadeo 0.8s infinite; }
         @keyframes floatUp { 0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; } 10% { opacity: 0.2; } 90% { opacity: 0.2; } 100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; } }
 
-        /* IMPRESION SEGURA ANDROID */
-        @media print { 
-            body * { visibility: hidden !important; } 
-            #area-impresion, #area-impresion * { visibility: visible !important; } 
-            #area-impresion { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; font-family: monospace; font-size: 12px; padding: 10px; z-index: 999999; } 
-            .oculto-print { display: none !important; } 
-        }
+        @media print { body * { visibility: hidden !important; } #area-impresion, #area-impresion * { visibility: visible !important; } #area-impresion { position: absolute; left: 0; top: 0; width: 100%; background: white !important; color: black !important; font-family: monospace; font-size: 12px; padding: 10px; z-index: 999999; } .oculto-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div id="bg-animaciones" class="fixed inset-0 pointer-events-none z-[1] overflow-hidden"></div>
-    <div id="status-conexion"><i class="fas fa-spinner fa-spin" id="icon-conn"></i> <span id="text-conn">Conectando a Firebase...</span></div>
+    <div id="bg-animaciones" style="position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;"></div>
+    <div id="status-conexion" style="background-color: #ef4444;"><i class="fas fa-spinner fa-spin" id="icon-conn"></i> <span id="text-conn">Conectando...</span></div>
 
-    <div id="pantalla-inicio" class="h-screen flex flex-col justify-center items-center bg-brandDark p-5 relative z-10">
-        <div class="card w-full max-w-md text-center relative animate-pop">
-            <img id="logo-inicio" class="logo-sys oculto h-24 mx-auto mb-4 block">
-            <h2 class="text-brandDark text-xl font-bold mb-1">Sistema Élite V24</h2>
-            <p class="text-xs text-gray-500 mb-5">Corporativo + Offline First</p>
+    <!-- ================= 0. LOGIN Y APP ================= -->
+    <div id="pantalla-inicio" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #153e36; padding: 1.25rem; position: relative; z-index: 10;">
+        <div class="card animate-pop" style="width: 100%; max-width: 28rem; text-align: center; position: relative;">
+            <img id="logo-inicio" class="logo-sys oculto" style="height: 6rem; margin: 0 auto 1rem auto; display: block;">
+            <h2 style="color: #153e36; font-size: 1.25rem; font-weight: bold; margin-bottom: 0.25rem;">Sistema Élite V26</h2>
+            <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 1.25rem;">Corporativo + Offline First</p>
             <div class="input-group"><input type="password" id="login-pin" placeholder="Ingrese su PIN asignado"></div>
             <button class="btn-main" onclick="entrarSistema()">Ingresar al Sistema</button>
-            <hr class="my-5 border-0 border-t border-gray-200">
+            <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid #e5e7eb;">
             <button class="btn-outline" onclick="entrarCatalogo()"><i class="fas fa-store"></i> Ver Tienda Virtual</button>
         </div>
     </div>
 
-    <div id="vista-admin" class="oculto relative z-10">
+    <!-- ================= 1. DASHBOARD PRINCIPAL ================= -->
+    <div id="vista-admin" class="oculto" style="position: relative; z-index: 10;">
         <div class="header-bg animate-pop">
-            <div class="flex justify-between items-center mb-4">
-                <img id="logo-admin" class="logo-sys oculto h-10">
-                <h1 class="text-xl m-0 font-bold" id="texto-logo-admin"><i class="fas fa-wallet"></i> <span id="lbl-rol">Admin</span></h1>
-                <div class="flex gap-4">
-                    <i class="fas fa-bell text-2xl cursor-pointer" id="bell-notif" onclick="abrirPantalla('pantalla-solicitudes')"></i>
-                    <i class="fas fa-cog admin-only text-2xl cursor-pointer" onclick="abrirPantalla('pantalla-config')"></i>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <img id="logo-admin" class="logo-sys oculto" style="height: 2.5rem;">
+                <h1 style="font-size: 1.25rem; margin: 0; font-weight: bold;" id="texto-logo-admin"><i class="fas fa-wallet"></i> <span id="lbl-rol">Admin</span></h1>
+                <div style="display: flex; gap: 1rem;">
+                    <i class="fas fa-bell" id="bell-notif" style="font-size: 1.5rem; cursor: pointer;" onclick="abrirPantalla('pantalla-solicitudes')"></i>
+                    <i class="fas fa-cog admin-only" style="font-size: 1.5rem; cursor: pointer;" onclick="abrirPantalla('pantalla-config')"></i>
                 </div>
             </div>
             <input type="text" class="search-bar" placeholder="🔍 Buscar cliente, cédula o deuda..." onkeyup="busquedaUniversal(this.value)">
-            <div class="tabs-pills admin-only !mt-4" id="filtros-dashboard">
+            <div class="tabs-pills admin-only" id="filtros-dashboard" style="margin-top: 1rem;">
                 <div class="tab-pill active" onclick="aplicarFiltroDash('todo', this)">Histórico</div>
                 <div class="tab-pill" onclick="aplicarFiltroDash('hoy', this)">Hoy</div>
                 <div class="tab-pill" onclick="aplicarFiltroDash('7dias', this)">7 Días</div>
             </div>
         </div>
 
-        <div class="px-5 -mt-4 animate-pop">
+        <div class="animate-pop" style="padding: 0 1.25rem; margin-top: -1rem;">
             <div class="actions-grid">
-                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-productos')"><i class="fas fa-box text-purple-500"></i><span>Catálogo</span></div>
-                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-crear-cliente')"><i class="fas fa-user-plus text-teal-400"></i><span>Cliente</span></div>
-                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-crear-credito')"><i class="fas fa-hand-holding-usd text-orange-400"></i><span>Crédito</span></div>
-                <div class="action-card" onclick="abrirPantalla('pantalla-deudas')"><i class="fas fa-receipt text-pink-500"></i><span>Cobrar</span></div>
+                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-productos')"><i class="fas fa-box" style="color: #a855f7;"></i><span>Catálogo</span></div>
+                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-crear-cliente')"><i class="fas fa-user-plus" style="color: #2dd4bf;"></i><span>Cliente</span></div>
+                <div class="action-card admin-only" onclick="abrirPantalla('pantalla-crear-credito')"><i class="fas fa-hand-holding-usd" style="color: #fb923c;"></i><span>Crédito</span></div>
+                <div class="action-card" onclick="abrirPantalla('pantalla-deudas')"><i class="fas fa-receipt" style="color: #ec4899;"></i><span>Cobrar</span></div>
                 
-                <div class="action-card admin-only req-prv" onclick="abrirPantalla('pantalla-proveedores')"><i class="fas fa-truck text-orange-500"></i><span>C x Pagar</span></div>
-                <div class="action-card admin-only req-emp" onclick="abrirPantalla('pantalla-empenos')"><i class="fas fa-ring text-yellow-500"></i><span>Empeños</span></div>
-                <div class="action-card admin-only req-rad" onclick="abrirRadarGlobal()"><i class="fas fa-globe text-green-500"></i><span>Radar GPS</span></div>
-                <div class="action-card admin-only" onclick="generarReporteMes()"><i class="fas fa-file-pdf text-red-500"></i><span>Reporte PDF</span></div>
+                <div class="action-card admin-only req-prv" onclick="abrirPantalla('pantalla-proveedores')"><i class="fas fa-truck" style="color: #f97316;"></i><span>C x Pagar</span></div>
+                <div class="action-card admin-only req-emp" onclick="abrirPantalla('pantalla-empenos')"><i class="fas fa-ring" style="color: #eab308;"></i><span>Empeños</span></div>
+                <div class="action-card admin-only req-rad" onclick="abrirRadarGlobal()"><i class="fas fa-globe" style="color: #22c55e;"></i><span>Radar GPS</span></div>
+                <div class="action-card admin-only" onclick="generarReporteMes()"><i class="fas fa-file-pdf" style="color: #ef4444;"></i><span>Reporte PDF</span></div>
             </div>
 
             <div id="alertas-pagos-pendientes" class="admin-only"></div>
-            <div id="alertas-dashboard" class="mb-4"></div>
+            <div id="alertas-dashboard" style="margin-bottom: 1rem;"></div>
 
             <div class="card" id="tarjeta-finanzas">
-                <h3 class="text-base font-bold mb-3"><i class="fas fa-chart-line text-orange-400"></i> <span class="admin-only">Caja y Finanzas</span><span class="cobrador-only oculto">Cierre Diario</span></h3>
+                <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 0.75rem;"><i class="fas fa-chart-line" style="color: #fb923c;"></i> <span class="admin-only">Caja y Finanzas</span><span class="cobrador-only oculto">Cierre Diario</span></h3>
                 <div class="admin-only">
-                    <div class="text-sm text-gray-500">Capital Cobrado Total:</div><div class="text-3xl font-bold text-brandDark" id="dash-cobrado">$0.00</div>
-                    <div class="req-bil oculto flex justify-between text-[11px] mt-2 bg-gray-50 p-2 rounded-lg border border-gray-200">
-                        <span>Efe: <b id="dash-efectivo" class="text-green-600">$0.00</b></span>
-                        <span>Bco: <b id="dash-banco" class="text-blue-600">$0.00</b></span>
-                        <span>Yap/Nq: <b id="dash-yappy" class="text-purple-600">$0.00</b></span>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Capital Cobrado Total:</div><div style="font-size: 1.875rem; font-weight: bold; color: #153e36;" id="dash-cobrado">$0.00</div>
+                    <div class="req-bil oculto" style="display: flex; justify-content: space-between; font-size: 0.6875rem; margin-top: 0.5rem; background: #f9fafb; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                        <span>Efe: <b id="dash-efectivo" style="color: #16a34a;">$0.00</b></span>
+                        <span>Bco: <b id="dash-banco" style="color: #2563eb;">$0.00</b></span>
+                        <span>Yap/Nq: <b id="dash-yappy" style="color: #9333ea;">$0.00</b></span>
                     </div>
-                    <div class="text-sm text-red-500 mt-3">Egresos (Gastos + CxP): <b id="dash-gastos">$0.00</b></div>
-                    <div class="text-lg font-bold text-brand border-t border-gray-100 pt-3 mt-3">Ganancia Neta: <span id="dash-neta">$0.00</span></div>
-                    <div id="dash-rendimiento-cobradores" class="text-xs mt-3"></div>
-                    <div class="bg-orange-100 h-3 rounded-full my-4 overflow-hidden"><div id="dash-barra" class="bg-orange-400 h-full w-0 transition-all duration-500"></div></div>
-                    <div class="flex justify-between text-xs text-gray-500"><span>Pendiente en Calle: <b id="dash-pendiente">$0.00</b></span></div>
+                    <div style="font-size: 0.875rem; color: #ef4444; margin-top: 0.75rem;">Egresos (Gastos + CxP): <b id="dash-gastos">$0.00</b></div>
+                    <div style="font-size: 1.125rem; font-weight: bold; color: #50a38d; border-top: 1px solid #f3f4f6; padding-top: 0.75rem; margin-top: 0.75rem;">Ganancia Neta: <span id="dash-neta">$0.00</span></div>
+                    <div id="dash-rendimiento-cobradores" style="font-size: 0.75rem; margin-top: 0.75rem;"></div>
+                    <div style="background: #ffedd5; height: 0.75rem; border-radius: 9999px; margin: 1rem 0; overflow: hidden;"><div id="dash-barra" style="background: #fb923c; height: 100%; width: 0%; transition: all 0.5s;"></div></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #6b7280;"><span>Pendiente en Calle: <b id="dash-pendiente">$0.00</b></span></div>
                 </div>
                 <div class="cobrador-only oculto">
-                    <div class="text-sm text-gray-500">Efectivo cobrado hoy:</div><div class="text-3xl font-bold text-brandDark" id="cobrador-recaudado">$0.00</div>
-                    <div id="box-comision" class="oculto alerta a-ver text-center p-4 mt-3"><span class="text-sm">Tu Comisión:</span> <b class="text-2xl block mt-1" id="cobrador-comision">$0.00</b></div>
-                    <button class="btn-main mt-4 !bg-orange-500 p-3" onclick="entregarBoveda()"><i class="fas fa-vault"></i> Entregar a Bóveda</button>
-                    <button class="btn-outline mt-3 p-3" onclick="imprimirCierreCaja()"><i class="fas fa-print"></i> Imprimir Cierre</button>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Efectivo cobrado hoy:</div><div style="font-size: 1.875rem; font-weight: bold; color: #153e36;" id="cobrador-recaudado">$0.00</div>
+                    <div id="box-comision" class="oculto alerta a-ver" style="text-align: center; padding: 1rem; margin-top: 0.75rem;"><span style="font-size: 0.875rem;">Tu Comisión:</span> <b style="font-size: 1.5rem; display: block; margin-top: 0.25rem;" id="cobrador-comision">$0.00</b></div>
+                    <button class="btn-main" style="margin-top: 1rem; background: #f97316; padding: 0.75rem;" onclick="entregarBoveda()"><i class="fas fa-vault"></i> Entregar a Bóveda</button>
+                    <button class="btn-outline" style="margin-top: 0.75rem; padding: 0.75rem;" onclick="imprimirCierreCaja()"><i class="fas fa-print"></i> Imprimir Cierre</button>
                 </div>
             </div>
         </div>
@@ -161,129 +170,130 @@
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="location.reload()"><i class="fas fa-home"></i><span>Inicio</span></div>
             <div class="nav-item" onclick="abrirPantalla('pantalla-clientes')"><i class="fas fa-users"></i><span>Clientes</span></div>
-            <div class="nav-item admin-only relative" onclick="abrirPantalla('pantalla-solicitudes')"><i class="fas fa-bell"></i><span>Web</span><span id="badge-solicitudes" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 text-[8px] font-bold oculto">0</span></div>
+            <div class="nav-item admin-only" style="position: relative;" onclick="abrirPantalla('pantalla-solicitudes')"><i class="fas fa-bell"></i><span>Web</span><span id="badge-solicitudes" class="oculto" style="position: absolute; top: -0.25rem; right: -0.25rem; background: #ef4444; color: white; border-radius: 9999px; padding: 0.125rem 0.375rem; font-size: 0.5rem; font-weight: bold;">0</span></div>
             <div class="nav-item admin-only" onclick="abrirPantalla('pantalla-difusion')"><i class="fab fa-whatsapp"></i><span>Campaña</span></div>
         </nav>
         <div class="fab" onclick="abrirPantalla('pantalla-deudas')"><i class="fas fa-search-dollar"></i></div>
     </div>
 
-    <div id="pantalla-config" class="fullscreen-modal relative z-20">
-        <div class="modal-header"><i class="fas fa-arrow-left cursor-pointer" onclick="cerrarPantallas()"></i> Configuración Global</div>
-        <div class="p-5 animate-pop">
+    <!-- ================= 2. CONFIGURACIÓN ================= -->
+    <!-- ESTE PANEL AHORA TIENE LA CLASE .fullscreen-modal QUE GARANTIZA QUE CUBRA LA PANTALLA -->
+    <div id="pantalla-config" class="fullscreen-modal">
+        <div class="modal-header"><i class="fas fa-arrow-left" style="cursor: pointer;" onclick="cerrarPantallas()"></i> Configuración Global</div>
+        <div class="animate-pop" style="padding: 1.25rem;">
             
-            <div class="card !bg-indigo-50 !border-indigo-200 border">
-                <h3 class="text-base text-indigo-500 font-bold mb-4"><i class="fas fa-sliders-h"></i> Módulos (Enciende/Apaga)</h3>
-                <div class="grid grid-cols-2 gap-4 text-xs">
-                    <div><b>Animaciones</b><label class="switch float-right"><input type="checkbox" id="cm-ani" onchange="toggleMod('ani', this)"><span class="slider"></span></label></div>
-                    <div><b>Pagos QR</b><label class="switch float-right"><input type="checkbox" id="cm-qr" onchange="toggleMod('qr', this)"><span class="slider"></span></label></div>
-                    <div><b>Portal Fiador</b><label class="switch float-right"><input type="checkbox" id="cm-fia" onchange="toggleMod('fia', this)"><span class="slider"></span></label></div>
-                    <div><b>Cupones Dto.</b><label class="switch float-right"><input type="checkbox" id="cm-cup" onchange="toggleMod('cup', this)"><span class="slider"></span></label></div>
-                    <div><b>Alertas Stock</b><label class="switch float-right"><input type="checkbox" id="cm-stk" onchange="toggleMod('stk', this)"><span class="slider"></span></label></div>
-                    <div><b>Club Puntos</b><label class="switch float-right"><input type="checkbox" id="cm-pts" onchange="toggleMod('pts', this)"><span class="slider"></span></label></div>
-                    <div><b>Pausa Cuotas</b><label class="switch float-right"><input type="checkbox" id="cm-pau" onchange="toggleMod('pau', this)"><span class="slider"></span></label></div>
-                    <div><b>Video Selfie ID</b><label class="switch float-right"><input type="checkbox" id="cm-slf" onchange="toggleMod('slf', this)"><span class="slider"></span></label></div>
-                    <div><b>Cuentas Pagar</b><label class="switch float-right"><input type="checkbox" id="cm-prv" onchange="toggleMod('prv', this)"><span class="slider"></span></label></div>
-                    <div><b>Radar Mapa</b><label class="switch float-right"><input type="checkbox" id="cm-rad" onchange="toggleMod('rad', this)"><span class="slider"></span></label></div>
-                    <div><b>Impuestos</b><label class="switch float-right"><input type="checkbox" id="cm-tax" onchange="toggleMod('tax', this)"><span class="slider"></span></label></div>
-                    <div class="text-indigo-700"><b>Empeños</b><label class="switch float-right"><input type="checkbox" id="cm-emp" onchange="toggleMod('emp', this)"><span class="slider"></span></label></div>
-                    <div class="text-indigo-700"><b>Billeteras Cajas</b><label class="switch float-right"><input type="checkbox" id="cm-bil" onchange="toggleMod('bil', this)"><span class="slider"></span></label></div>
-                    <div class="text-indigo-700"><b>Prórrogas (Refin)</b><label class="switch float-right"><input type="checkbox" id="cm-pro" onchange="toggleMod('pro', this)"><span class="slider"></span></label></div>
+            <div class="card" style="background: #eef2ff; border: 1px solid #c7d2fe;">
+                <h3 style="font-size: 1rem; color: #6366f1; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-sliders-h"></i> Módulos (Enciende/Apaga)</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; font-size: 0.8125rem;">
+                    <div><b>Animaciones</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-ani" onchange="toggleMod('ani', this)"><span class="slider"></span></label></div>
+                    <div><b>Pagos QR</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-qr" onchange="toggleMod('qr', this)"><span class="slider"></span></label></div>
+                    <div><b>Portal Fiador</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-fia" onchange="toggleMod('fia', this)"><span class="slider"></span></label></div>
+                    <div><b>Cupones Dto.</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-cup" onchange="toggleMod('cup', this)"><span class="slider"></span></label></div>
+                    <div><b>Alertas Stock</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-stk" onchange="toggleMod('stk', this)"><span class="slider"></span></label></div>
+                    <div><b>Club Puntos</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-pts" onchange="toggleMod('pts', this)"><span class="slider"></span></label></div>
+                    <div><b>Pausa Cuotas</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-pau" onchange="toggleMod('pau', this)"><span class="slider"></span></label></div>
+                    <div><b>Video Selfie ID</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-slf" onchange="toggleMod('slf', this)"><span class="slider"></span></label></div>
+                    <div><b>Cuentas Pagar</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-prv" onchange="toggleMod('prv', this)"><span class="slider"></span></label></div>
+                    <div><b>Radar Mapa</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-rad" onchange="toggleMod('rad', this)"><span class="slider"></span></label></div>
+                    <div><b>Impuestos</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-tax" onchange="toggleMod('tax', this)"><span class="slider"></span></label></div>
+                    <div style="color: #4338ca;"><b>Empeños</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-emp" onchange="toggleMod('emp', this)"><span class="slider"></span></label></div>
+                    <div style="color: #4338ca;"><b>Billeteras Cajas</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-bil" onchange="toggleMod('bil', this)"><span class="slider"></span></label></div>
+                    <div style="color: #4338ca;"><b>Prórrogas (Refin)</b><label class="switch" style="float: right;"><input type="checkbox" id="cm-pro" onchange="toggleMod('pro', this)"><span class="slider"></span></label></div>
                 </div>
-                <div class="input-group req-tax oculto mt-4"><input type="number" id="cfg-tax-pct" placeholder="% Impuesto (Ej: 7)"><i class="fas fa-percent"></i></div>
-                <hr class="my-4 border-t border-gray-200">
-                <div class="flex justify-between text-sm mb-3"><b>Comisiones Empleados</b><label class="switch"><input type="checkbox" id="cfg-comision-activa" onchange="toggleMod('com', this)"><span class="slider"></span></label></div>
+                <div class="input-group req-tax oculto" style="margin-top: 1rem;"><input type="number" id="cfg-tax-pct" placeholder="% Impuesto (Ej: 7)"><i class="fas fa-percent"></i></div>
+                <hr style="margin: 1rem 0; border-top: 1px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem;"><b>Comisiones Empleados</b><label class="switch"><input type="checkbox" id="cfg-comision-activa" onchange="toggleMod('com', this)"><span class="slider"></span></label></div>
                 <div class="input-group req-com oculto"><input type="number" id="cfg-comision-pct" placeholder="% Comision"></div>
-                <div class="flex justify-between text-sm mb-3"><b>Referidos (Billetera)</b><label class="switch"><input type="checkbox" id="cfg-mod-ref" onchange="toggleMod('ref', this)"><span class="slider"></span></label></div>
-                <div class="flex justify-between text-sm"><b>Auditoría (Logs)</b><label class="switch"><input type="checkbox" id="cfg-mod-aud" onchange="toggleMod('aud', this)"><span class="slider"></span></label></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem;"><b>Referidos (Billetera)</b><label class="switch"><input type="checkbox" id="cfg-mod-ref" onchange="toggleMod('ref', this)"><span class="slider"></span></label></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem;"><b>Auditoría (Logs)</b><label class="switch"><input type="checkbox" id="cfg-mod-aud" onchange="toggleMod('aud', this)"><span class="slider"></span></label></div>
             </div>
             
             <div class="card">
-                <h3 class="text-base font-bold mb-4"><i class="fas fa-file-contract"></i> Contratos Inteligentes</h3>
+                <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-file-contract"></i> Contratos Inteligentes</h3>
                 <div id="lista-contratos-cfg"></div>
-                <div class="flex gap-2">
-                    <select id="cfg-cont-cat" class="p-3 border border-gray-200 rounded-lg flex-1 text-sm bg-white">
-                        <option value="Celulares">Celulares</option><option value="Motos">Motos</option><option value="Electrodomesticos">Electrodomésticos</option><option value="Efectivo">Préstamo Efectivo</option>
-                    </select>
-                    <button class="btn-main w-auto px-4" onclick="addContrato()">Añadir</button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <select id="cfg-cont-cat" style="padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; flex: 1; font-size: 0.875rem; background: white;"><option value="Celulares">Celulares</option><option value="Motos">Motos</option><option value="Electrodomesticos">Electrodomésticos</option><option value="Efectivo">Préstamo Efectivo</option></select>
+                    <button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addContrato()">Añadir</button>
                 </div>
-                <textarea id="cfg-cont-txt" class="w-full border border-gray-200 rounded-lg p-3 mt-3 text-xs" rows="4" placeholder="Plantilla. Etiquetas: [NOMBRE], [CEDULA], [PRODUCTO], [IMEI], [CUOTAS], [MONTO_CUOTA]"></textarea>
+                <textarea id="cfg-cont-txt" style="width: 100%; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; margin-top: 0.75rem; font-size: 0.75rem;" rows="4" placeholder="Plantilla. Etiquetas: [NOMBRE], [CEDULA], [PRODUCTO], [IMEI], [CUOTAS], [MONTO_CUOTA]"></textarea>
             </div>
 
-            <div class="card req-cup oculto"><h3 class="text-base font-bold mb-4"><i class="fas fa-ticket-alt"></i> Cupones de Descuento</h3><div id="lista-cupones-cfg"></div><div class="flex flex-wrap gap-2 mt-3"><input type="file" id="cfg-cup-img" accept="image/*" class="w-full text-xs" onchange="pFoto(event, b=>tempCupImg=b)"><input type="text" id="cfg-cup-cod" placeholder="CÓDIGO" class="flex-1 p-2 border border-gray-200 rounded-lg uppercase"><input type="number" id="cfg-cup-val" placeholder="Valor" class="w-20 p-2 border border-gray-200 rounded-lg"><select id="cfg-cup-tip" class="p-2 border border-gray-200 rounded-lg"><option value="%">%</option><option value="$">$</option></select><button class="btn-main w-auto px-4" onclick="addCupon()">+</button></div></div>
-            <div class="card req-pts oculto"><h3 class="text-base font-bold mb-4"><i class="fas fa-gift"></i> Premios e Inventario</h3><div id="lista-premios-cfg"></div><div class="flex flex-wrap gap-2 mt-3"><input type="file" id="cfg-prem-img" accept="image/*" class="w-full text-xs" onchange="pFoto(event, b=>tempPremImg=b)"><input type="text" id="cfg-prem-nom" placeholder="Premio" class="flex-1 p-2 border border-gray-200 rounded-lg"><input type="number" id="cfg-prem-pts" placeholder="Pts" class="w-16 p-2 border border-gray-200 rounded-lg"><input type="number" id="cfg-prem-stk" placeholder="Stock" class="w-16 p-2 border border-gray-200 rounded-lg"><button class="btn-main w-auto px-4" onclick="addPremio()">+</button></div></div>
+            <div class="card req-cup oculto"><h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-ticket-alt"></i> Cupones de Descuento</h3><div id="lista-cupones-cfg"></div><div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;"><input type="file" id="cfg-cup-img" accept="image/*" style="width: 100%; font-size: 0.75rem;" onchange="pFoto(event, b=>tempCupImg=b)"><input type="text" id="cfg-cup-cod" placeholder="CÓDIGO" style="flex: 1; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; text-transform: uppercase;"><input type="number" id="cfg-cup-val" placeholder="Valor" style="width: 5rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><select id="cfg-cup-tip" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><option value="%">%</option><option value="$">$</option></select><button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addCupon()">+</button></div></div>
+            <div class="card req-pts oculto"><h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-gift"></i> Premios e Inventario</h3><div id="lista-premios-cfg"></div><div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;"><input type="file" id="cfg-prem-img" accept="image/*" style="width: 100%; font-size: 0.75rem;" onchange="pFoto(event, b=>tempPremImg=b)"><input type="text" id="cfg-prem-nom" placeholder="Premio" style="flex: 1; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><input type="number" id="cfg-prem-pts" placeholder="Pts" style="width: 4rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><input type="number" id="cfg-prem-stk" placeholder="Stock" style="width: 4rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addPremio()">+</button></div></div>
 
             <div class="card">
-                <h3 class="text-base font-bold mb-4"><i class="fas fa-users-cog"></i> Usuarios y Horarios</h3>
+                <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-users-cog"></i> Usuarios y Horarios</h3>
                 <div class="input-group"><input type="password" id="cfg-pin-admin" placeholder="Cambiar PIN Admin"></div>
-                <div class="flex gap-3 mb-4 text-xs"><div>Inicio Cobrador:<input type="time" id="cfg-h-ini" class="w-full p-2 border border-gray-200 rounded-lg mt-1"></div><div>Fin Cobrador:<input type="time" id="cfg-h-fin" class="w-full p-2 border border-gray-200 rounded-lg mt-1"></div></div>
-                <h4 class="text-sm font-bold mb-2">Empleados</h4>
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.75rem;"><div>Inicio Cobrador:<input type="time" id="cfg-h-ini" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-top: 0.25rem;"></div><div>Fin Cobrador:<input type="time" id="cfg-h-fin" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-top: 0.25rem;"></div></div>
+                <h4 style="font-size: 0.875rem; font-weight: bold; margin-bottom: 0.5rem;">Empleados</h4>
                 <div id="lista-cobradores-cfg"></div>
-                <div class="flex gap-2 mt-3"><input type="text" id="cfg-cob-nom" placeholder="Nombre Cobrador" class="flex-1 p-2 border border-gray-200 rounded-lg"><input type="text" id="cfg-cob-pin" placeholder="PIN" class="w-20 p-2 border border-gray-200 rounded-lg"><button class="btn-main w-auto px-4" onclick="addCobrador()">+</button></div>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;"><input type="text" id="cfg-cob-nom" placeholder="Nombre Cobrador" style="flex: 1; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><input type="text" id="cfg-cob-pin" placeholder="PIN" style="width: 5rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addCobrador()">+</button></div>
             </div>
 
             <div class="card">
-                <h3 class="text-base font-bold mb-4"><i class="fas fa-globe"></i> Generales</h3>
-                <label class="text-xs font-bold mb-2 block">Logo Empresa:</label>
-                <input type="file" id="cfg-logo" accept="image/*" class="w-full text-xs mb-4" onchange="pFoto(event, b=>{db.config.logo=b; document.getElementById('preview-logo').src=b; document.getElementById('preview-logo').classList.remove('oculto');})">
-                <img id="preview-logo" class="foto-preview oculto mb-4">
+                <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-globe"></i> Generales</h3>
+                <label style="font-size: 0.75rem; font-weight: bold; margin-bottom: 0.5rem; display: block;">Logo Empresa:</label>
+                <input type="file" id="cfg-logo" accept="image/*" style="width: 100%; font-size: 0.75rem; margin-bottom: 1rem;" onchange="pFoto(event, b=>{db.config.logo=b; document.getElementById('preview-logo').src=b; document.getElementById('preview-logo').classList.remove('oculto');})">
+                <img id="preview-logo" class="foto-preview oculto" style="margin-bottom: 1rem;">
                 <div class="input-group"><input type="text" id="cfg-wa" placeholder="WhatsApp Admin (507...)"><i class="fab fa-whatsapp"></i></div>
                 <div class="input-group"><textarea id="cfg-notas" placeholder="Notas Públicas en el Catálogo" rows="2"></textarea></div>
                 <div class="input-group"><textarea id="cfg-notas-chk" placeholder="Notas en Checkout (Antes de Firmar)" rows="2"></textarea></div>
             </div>
 
-            <div class="flex gap-3 mb-5">
-                <button class="btn-main !bg-blue-500 flex-1" id="btn-cargar-backup" onclick="document.getElementById('imp-file').click()"><i class="fas fa-upload"></i> Restaurar</button>
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+                <button class="btn-main" style="background-color: #3b82f6; flex: 1;" id="btn-cargar-backup" onclick="document.getElementById('imp-file').click()"><i class="fas fa-upload"></i> Restaurar</button>
                 <input type="file" id="imp-file" class="oculto" accept=".json" onchange="importarDB(event)">
-                <button class="btn-main !bg-gray-800 flex-1" onclick="exportarDB()"><i class="fas fa-download"></i> Respaldar DB</button>
+                <button class="btn-main" style="background-color: #1f2937; flex: 1;" onclick="exportarDB()"><i class="fas fa-download"></i> Respaldar DB</button>
             </div>
             
-            <button class="btn-main p-4 text-base" onclick="guardarConfig()">GUARDAR EN LA NUBE Y APLICAR</button>
+            <button class="btn-main" style="padding: 1rem; font-size: 1rem;" onclick="guardarConfig()">GUARDAR EN LA NUBE Y APLICAR</button>
         </div>
     </div>
 
-    <div id="pantalla-clientes" class="fullscreen-modal relative z-20">
-        <div class="modal-header"><i class="fas fa-arrow-left cursor-pointer" onclick="cerrarPantallas()"></i> Directorio</div>
-        <div class="bg-brandDark p-4">
-            <div class="tabs-pills !mt-0" id="tabs-directorio">
+    <!-- ================= 3. CLIENTES Y DIRECTORIO ================= -->
+    <div id="pantalla-clientes" class="fullscreen-modal">
+        <div class="modal-header"><i class="fas fa-arrow-left" style="cursor: pointer;" onclick="cerrarPantallas()"></i> Directorio</div>
+        <div style="background: #153e36; padding: 1rem;">
+            <div class="tabs-pills" style="margin-top: 0;" id="tabs-directorio">
                 <div class="tab-pill active" onclick="switchTabDir(this); fCli='todos'; renCli('');">Todos</div>
-                <div class="tab-pill text-red-500" onclick="switchTabDir(this); fCli='buro'; renCli('');">Buró</div>
-                <div class="tab-pill text-yellow-500" onclick="switchTabDir(this); fCli='legal'; renCli('');">Legal</div>
+                <div class="tab-pill" style="color: #ef4444;" onclick="switchTabDir(this); fCli='buro'; renCli('');">Buró</div>
+                <div class="tab-pill" style="color: #eab308;" onclick="switchTabDir(this); fCli='legal'; renCli('');">Legal</div>
             </div>
-            <input type="text" class="search-bar !mb-4" placeholder="🔍 Buscar por nombre o cédula..." onkeyup="renCli(this.value)">
-            <div class="flex gap-3">
-                <button class="btn-outline admin-only !bg-green-500 !text-white !border-none flex-1 text-xs p-2" onclick="exportarCSV()"><i class="fas fa-file-excel"></i> Excel</button>
-                <button class="btn-outline !bg-orange-400 !text-white !border-none flex-1 text-xs p-2" onclick="generarRutaInteligente()"><i class="fas fa-route"></i> Ruta Óptima</button>
+            <input type="text" class="search-bar" style="margin-bottom: 1rem;" placeholder="🔍 Buscar por nombre o cédula..." onkeyup="renCli(this.value)">
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-outline admin-only" style="background: #22c55e; color: white; border: none; flex: 1; font-size: 0.8125rem; padding: 0.5rem;" onclick="exportarCSV()"><i class="fas fa-file-excel"></i> Excel</button>
+                <button class="btn-outline" style="background: #fb923c; color: white; border: none; flex: 1; font-size: 0.8125rem; padding: 0.5rem;" onclick="generarRutaInteligente()"><i class="fas fa-route"></i> Ruta Óptima</button>
             </div>
         </div>
-        <div class="p-5 animate-pop" id="lista-clientes-ui"></div>
+        <div class="animate-pop" style="padding: 1.25rem;" id="lista-clientes-ui"></div>
     </div>
-    <div id="pantalla-detalle-cliente" class="fullscreen-modal relative z-20">
+    <div id="pantalla-detalle-cliente" class="fullscreen-modal">
         <div class="modal-header">
-            <i class="fas fa-arrow-left cursor-pointer" onclick="abrirPantalla('pantalla-clientes')"></i> 
-            <div class="flex-1 text-center"><div id="det-nombre" class="text-lg font-bold"></div><div id="det-score" class="text-xs tracking-widest mt-1 text-gray-500"></div></div>
-            <i class="fas fa-ellipsis-v admin-only text-gray-500 p-2 cursor-pointer" onclick="document.getElementById('modal-opc-cliente').style.display='flex'"></i>
+            <i class="fas fa-arrow-left" style="cursor:pointer;" onclick="abrirPantalla('pantalla-clientes')"></i> 
+            <div style="flex:1; text-align:center;"><div id="det-nombre" style="font-size:1.125rem; font-weight:bold;"></div><div id="det-score" style="font-size:0.75rem; letter-spacing:0.1em; margin-top:0.25rem; color:#6b7280;"></div></div>
+            <i class="fas fa-ellipsis-v admin-only" style="color:#6b7280; padding:0.5rem; cursor:pointer;" onclick="document.getElementById('modal-opc-cliente').style.display='flex'"></i>
         </div>
-        <div class="p-5 animate-pop">
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button class="btn-main !bg-green-500 text-xs p-3 shadow-md hover:-translate-y-1" onclick="compartirPortal()"><i class="fas fa-link"></i> Enviar Link</button>
-                <button class="btn-main req-fia oculto !bg-blue-500 text-xs p-3 shadow-md hover:-translate-y-1" onclick="compartirFiador()"><i class="fas fa-users"></i> Link Fiador</button>
+        <div class="animate-pop" style="padding:1.25rem;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                <button class="btn-main" style="background:#22c55e; font-size:0.75rem; padding:0.75rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="compartirPortal()"><i class="fas fa-link"></i> Enviar Link</button>
+                <button class="btn-main req-fia oculto" style="background:#3b82f6; font-size:0.75rem; padding:0.75rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="compartirFiador()"><i class="fas fa-users"></i> Link Fiador</button>
             </div>
             
-            <div id="det-status-badge" class="text-center mb-4 text-sm font-bold"></div>
+            <div id="det-status-badge" style="text-align:center; margin-bottom:1rem; font-size:0.875rem; font-weight:bold;"></div>
 
-            <div class="card text-center mb-4 p-6 shadow-md border border-gray-100">
-                <div class="text-sm text-gray-500 font-bold tracking-wide uppercase">Deuda Restante</div>
-                <div class="text-5xl font-extrabold text-brandDark my-3" id="det-monto">$0.00</div>
-                <button id="btn-paz-salvo" class="btn-outline admin-only oculto mt-3 !border-green-500 !text-green-500 w-full" onclick="abrirPazSalvo()"><i class="fas fa-certificate"></i> Generar Paz y Salvo</button>
-                <div id="det-nota-admin" class="alerta a-nar oculto mt-4 text-left"></div>
-                <div id="box-billetera" class="oculto req-ref text-sm text-brand font-bold mt-4 bg-teal-50 p-3 rounded-xl border border-teal-100">Billetera: <span id="det-billetera">$0.00</span> | Puntos: <span id="det-pts">0</span></div>
+            <div class="card animate-pop" style="text-align:center; margin-bottom:1rem; padding:1.5rem; border:1px solid #f3f4f6;">
+                <div style="font-size:0.875rem; color:#6b7280; font-weight:bold; letter-spacing:0.05em; text-transform:uppercase;">Deuda Restante</div>
+                <div style="font-size:3rem; font-weight:900; color:#153e36; margin:0.75rem 0;" id="det-monto">$0.00</div>
+                <button id="btn-paz-salvo" class="btn-outline admin-only oculto" style="margin-top:0.75rem; border-color:#22c55e; color:#22c55e; width:100%;" onclick="abrirPazSalvo()"><i class="fas fa-certificate"></i> Generar Paz y Salvo</button>
+                <div id="det-nota-admin" class="alerta a-nar oculto" style="margin-top:1rem; text-align:left;"></div>
+                <div id="box-billetera" class="oculto req-ref" style="font-size:0.875rem; color:#50a38d; font-weight:bold; margin-top:1rem; background:#f0fdfa; padding:0.75rem; border-radius:0.75rem; border:1px solid #ccfbf1;">Billetera: <span id="det-billetera">$0.00</span> | Puntos: <span id="det-pts">0</span></div>
             </div>
 
-            <div class="flex gap-2 mb-5 overflow-x-auto pb-2">
-                <button class="btn-outline text-xs p-3 !border-green-500 !text-green-500 flex-shrink-0 bg-white" onclick="waMsg('Aviso preventivo de pago.')"><i class="fab fa-whatsapp"></i> Recordar</button>
-                <button class="btn-outline text-xs p-3 !border-orange-500 !text-orange-500 flex-shrink-0 bg-white" onclick="waMsg('Tenemos registrada una promesa.')"><i class="fab fa-whatsapp"></i> Promesa</button>
-                <button class="btn-outline req-pau oculto text-xs p-3 !border-gray-700 !text-gray-700 flex-shrink-0 bg-white" onclick="congelarCredito()"><i class="fas fa-snowflake"></i> Pausar</button>
-                <button class="btn-outline req-pro oculto text-xs p-3 !border-indigo-500 !text-indigo-500 flex-shrink-0 bg-white" onclick="abrirModalProrroga()"><i class="fas fa-calendar-plus"></i> Prórroga</button>
+            <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; overflow-x:auto; padding-bottom:0.5rem;">
+                <button class="btn-outline" style="font-size:0.75rem; padding:0.75rem; border-color:#22c55e; color:#22c55e; flex-shrink:0; background:white;" onclick="waMsg('Aviso preventivo de pago.')"><i class="fab fa-whatsapp"></i> Recordar</button>
+                <button class="btn-outline" style="font-size:0.75rem; padding:0.75rem; border-color:#f97316; color:#f97316; flex-shrink:0; background:white;" onclick="waMsg('Tenemos registrada una promesa.')"><i class="fab fa-whatsapp"></i> Promesa</button>
+                <button class="btn-outline req-pau oculto" style="font-size:0.75rem; padding:0.75rem; border-color:#374151; color:#374151; flex-shrink:0; background:white;" onclick="congelarCredito()"><i class="fas fa-snowflake"></i> Pausar</button>
+                <button class="btn-outline req-pro oculto" style="font-size:0.75rem; padding:0.75rem; border-color:#6366f1; color:#6366f1; flex-shrink:0; background:white;" onclick="abrirModalProrroga()"><i class="fas fa-calendar-plus"></i> Prórroga</button>
             </div>
 
             <div class="tabs-pills">
@@ -292,158 +302,306 @@
                 <div class="tab-pill" onclick="switchTab('gestiones', this)"><i class="fas fa-headset"></i> Gestiones</div>
             </div>
             
-            <div id="tab-plan" class="mt-3"><div id="lista-cuotas-ui"></div></div>
-            <div id="tab-historial" class="oculto mt-3"><div id="lista-transacciones-ui"></div></div>
-            <div id="tab-gestiones" class="oculto mt-3"><button class="btn-outline mb-4 bg-white" onclick="document.getElementById('modal-gestion').style.display='flex'">+ Añadir Gestión</button><div id="lista-gestiones-ui"></div></div>
+            <div id="tab-plan" style="margin-top:0.75rem;"><div id="lista-cuotas-ui"></div></div>
+            <div id="tab-historial" class="oculto" style="margin-top:0.75rem;"><div id="lista-transacciones-ui"></div></div>
+            <div id="tab-gestiones" class="oculto" style="margin-top:0.75rem;"><button class="btn-outline" style="margin-bottom:1rem; background:white;" onclick="document.getElementById('modal-gestion').style.display='flex'">+ Añadir Gestión</button><div id="lista-gestiones-ui"></div></div>
         </div>
     </div>
 
-    <div id="modal-prorroga" class="fullscreen-modal !bg-black/80 justify-center z-[110]">
-        <div class="card m-5 p-6 animate-pop shadow-2xl">
-            <h3 class="text-indigo-600 mb-4 font-bold text-xl"><i class="fas fa-calendar-plus"></i> Registrar Prórroga</h3>
-            <p class="text-xs text-gray-500 mb-4 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-200">Mueva todas las fechas de pago del cliente. El cargo cobrado entrará como ganancia pura a su caja, sin descontarse de la deuda del cliente.</p>
-            <div class="input-group"><input type="number" id="pro-monto" placeholder="Monto cobrado por Prórroga ($)" class="text-lg font-bold text-indigo-700"></div>
-            <div class="input-group req-bil oculto mt-2">
-                <select id="pro-metodo" class="font-bold text-gray-700">
-                    <option value="Efectivo">💵 Pagó en Efectivo</option>
-                    <option value="Banco">🏦 Transferencia Bancaria</option>
-                    <option value="Yappy">📱 Billetera (Yappy/Nequi)</option>
+    <div id="modal-prorroga" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;">
+        <div class="card animate-pop" style="margin:1.25rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            <h3 style="color:#4f46e5; margin-bottom:1rem; font-weight:bold; font-size:1.25rem;"><i class="fas fa-calendar-plus"></i> Registrar Prórroga</h3>
+            <p style="font-size:0.75rem; color:#6b7280; margin-bottom:1rem; line-height:1.6; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">Mueva las fechas de pago del cliente. El cargo cobrado entrará como ganancia pura a su caja, sin descontarse de la deuda.</p>
+            <div class="input-group"><input type="number" id="pro-monto" placeholder="Monto cobrado por Prórroga ($)" style="font-size:1.125rem; font-weight:bold; color:#4338ca;"></div>
+            <div class="input-group req-bil oculto" style="margin-top:0.5rem;">
+                <select id="pro-metodo" style="font-weight:bold; color:#374151;">
+                    <option value="Efectivo">💵 Pagó en Efectivo</option><option value="Banco">🏦 Transferencia Bancaria</option><option value="Yappy">📱 Billetera (Yappy/Nequi)</option>
                 </select>
             </div>
-            <div class="input-group mt-3"><input type="number" id="pro-dias" placeholder="Días a aplazar (Ej: 15)" class="font-bold"></div>
-            <button class="btn-main !bg-indigo-600 p-4 mt-4 text-base" onclick="aplicarProrroga()">Cobrar Prórroga y Mover Fechas</button>
-            <button class="btn-outline mt-3 p-4" onclick="document.getElementById('modal-prorroga').style.display='none'">Cancelar</button>
+            <div class="input-group" style="margin-top:0.75rem;"><input type="number" id="pro-dias" placeholder="Días a aplazar (Ej: 15)" style="font-weight:bold;"></div>
+            <button class="btn-main" style="background:#4f46e5; padding:1rem; margin-top:1rem; font-size:1rem;" onclick="aplicarProrroga()">Cobrar Prórroga y Mover Fechas</button>
+            <button class="btn-outline" style="margin-top:0.75rem; padding:1rem;" onclick="document.getElementById('modal-prorroga').style.display='none'">Cancelar</button>
         </div>
     </div>
 
-    <div id="modal-opc-cliente" class="fullscreen-modal !bg-black/80 justify-end z-[110]">
-        <div class="bg-white rounded-t-3xl p-6 animate-pop">
-            <div class="flex gap-2 mb-4">
-                <button class="btn-outline !border-red-500 !text-red-500 flex-1 text-xs" onclick="toggleListaNegra()"><i class="fas fa-ban"></i> Buró</button>
-                <button class="btn-outline !border-yellow-500 !text-yellow-600 flex-1 text-xs" onclick="toggleLegal()"><i class="fas fa-gavel"></i> Legal</button>
-                <button class="btn-outline !border-gray-700 !text-gray-700 flex-1 text-xs" onclick="generarOrdenRetiro()"><i class="fas fa-file-pdf"></i> Retiro</button>
+    <div id="modal-opc-cliente" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end; z-index:110;">
+        <div class="animate-pop" style="background:white; border-radius:1.5rem 1.5rem 0 0; padding:1.5rem;">
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+                <button class="btn-outline" style="border-color:#ef4444; color:#ef4444; flex:1; font-size:0.75rem;" onclick="toggleListaNegra()"><i class="fas fa-ban"></i> Buró</button>
+                <button class="btn-outline" style="border-color:#eab308; color:#ca8a04; flex:1; font-size:0.75rem;" onclick="toggleLegal()"><i class="fas fa-gavel"></i> Legal</button>
+                <button class="btn-outline" style="border-color:#374151; color:#374151; flex:1; font-size:0.75rem;" onclick="generarOrdenRetiro()"><i class="fas fa-file-pdf"></i> Retiro</button>
             </div>
-            <button class="btn-outline mb-3 !border-gray-800 !text-gray-800 bg-gray-50" onclick="abrirEditarCliente()"><i class="fas fa-user-edit"></i> Editar Datos Personales</button>
-            <button class="btn-outline mb-4 !border-gray-800 !text-gray-800 bg-gray-50" onclick="editarDeudaTotal()"><i class="fas fa-pen"></i> Ajustar Deuda Manual</button>
-            <b class="text-sm">Nota Pública en el Portal del Cliente:</b>
-            <div class="input-group mt-2 mb-3"><select id="cli-nota-color" class="p-3 font-bold"><option value="verde" class="text-green-600">Verde (Todo en orden)</option><option value="naranja" class="text-orange-500">Naranja (Advertencia moderada)</option><option value="roja" class="text-red-600">Roja (Urgente / Bloqueo)</option></select></div>
-            <div class="input-group mb-4"><textarea id="cli-nota-portal" rows="3" class="p-3 text-sm" placeholder="Escriba un mensaje para que el cliente lo vea en su portal..."></textarea></div>
-            <div class="flex gap-3"><button class="btn-main p-4" onclick="guardarNotaPortal()">Guardar Nota</button><button class="btn-danger p-4 w-full" onclick="document.getElementById('modal-opc-cliente').style.display='none'">Cerrar</button></div>
+            <button class="btn-outline" style="margin-bottom:0.75rem; border-color:#1f2937; color:#1f2937; background:#f9fafb;" onclick="abrirEditarCliente()"><i class="fas fa-user-edit"></i> Editar Datos Personales</button>
+            <button class="btn-outline" style="margin-bottom:1rem; border-color:#1f2937; color:#1f2937; background:#f9fafb;" onclick="editarDeudaTotal()"><i class="fas fa-pen"></i> Ajustar Deuda Manual</button>
+            <b style="font-size:0.875rem;">Nota Pública en el Portal del Cliente:</b>
+            <div class="input-group" style="margin-top:0.5rem; margin-bottom:0.75rem;"><select id="cli-nota-color" style="padding:0.75rem; font-weight:bold;"><option value="verde" style="color:#16a34a;">Verde (Todo en orden)</option><option value="naranja" style="color:#f97316;">Naranja (Advertencia)</option><option value="roja" style="color:#dc2626;">Roja (Urgente / Bloqueo)</option></select></div>
+            <div class="input-group" style="margin-bottom:1rem;"><textarea id="cli-nota-portal" rows="3" style="padding:0.75rem; font-size:0.875rem;" placeholder="Escriba un mensaje para que el cliente lo vea en su portal..."></textarea></div>
+            <div style="display:flex; gap:0.75rem;"><button class="btn-main" style="padding:1rem;" onclick="guardarNotaPortal()">Guardar Nota</button><button class="btn-danger" style="padding:1rem; width:100%;" onclick="document.getElementById('modal-opc-cliente').style.display='none'">Cerrar</button></div>
         </div>
     </div>
 
-    <div id="modal-abonar-custom" class="fullscreen-modal !bg-black/80 z-[110]">
-        <div class="card m-auto w-11/12 mt-20 p-6 animate-pop shadow-2xl border border-gray-100">
-            <h3 class="text-brand mb-4 text-xl font-black">Registrar Abono</h3>
-            <div class="flex justify-between mb-5 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200"><span id="abc-num" class="font-bold text-gray-600"></span><b id="abc-debe" class="text-red-500 text-lg"></b></div>
-            <label class="text-xs font-bold block mb-2 text-gray-600 uppercase tracking-wide">Efectivo Recibido ($):</label>
-            <div class="input-group"><input type="number" id="abc-monto" class="text-3xl font-black text-brandDark p-4 text-center"></div>
+    <div id="modal-abonar-custom" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); z-index:110;">
+        <div class="card animate-pop" style="margin:auto; width:91%; margin-top:5rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid #f3f4f6;">
+            <h3 style="color:#50a38d; margin-bottom:1rem; font-size:1.25rem; font-weight:900;">Registrar Abono</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.25rem; font-size:0.875rem; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;"><span id="abc-num" style="font-weight:bold; color:#4b5563;"></span><b id="abc-debe" style="color:#ef4444; font-size:1.125rem;"></b></div>
+            <label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.5rem; color:#4b5563; text-transform:uppercase; letter-spacing:0.025em;">Efectivo Recibido ($):</label>
+            <div class="input-group"><input type="number" id="abc-monto" style="font-size:1.875rem; font-weight:900; color:#153e36; padding:1rem; text-align:center;"></div>
             
-            <div class="input-group req-bil oculto mt-4 border-blue-200 bg-blue-50">
-                <select id="abc-metodo" class="font-bold text-blue-800 p-4">
-                    <option value="Efectivo">💵 Cobro en Efectivo</option>
-                    <option value="Banco">🏦 Transferencia Banco</option>
-                    <option value="Yappy">📱 Yappy / Nequi / App</option>
+            <div class="input-group req-bil oculto" style="margin-top:1rem; border-color:#bfdbfe; background:#eff6ff;">
+                <select id="abc-metodo" style="font-weight:bold; color:#1e40af; padding:1rem;">
+                    <option value="Efectivo">💵 Cobro en Efectivo</option><option value="Banco">🏦 Transferencia Banco</option><option value="Yappy">📱 Yappy / Nequi / App</option>
                 </select>
             </div>
 
-            <div id="caja-usar-billetera" class="oculto req-ref bg-teal-50 p-4 rounded-xl mt-4 flex justify-between text-sm items-center border border-teal-200">
-                <span class="font-bold text-teal-800">Usar Saldo (<b id="abc-billetera-disp">$0</b>)</span><label class="switch"><input type="checkbox" id="abc-usar-bil"><span class="slider"></span></label>
+            <div id="caja-usar-billetera" class="oculto req-ref" style="background:#f0fdfa; padding:1rem; border-radius:0.75rem; margin-top:1rem; display:flex; justify-content:space-between; font-size:0.875rem; align-items:center; border:1px solid #ccfbf1;">
+                <span style="font-weight:bold; color:#115e59;">Usar Saldo (<b id="abc-billetera-disp">$0</b>)</span><label class="switch"><input type="checkbox" id="abc-usar-bil"><span class="slider"></span></label>
             </div>
             
-            <label class="text-xs font-bold text-orange-500 block mb-2 mt-4 uppercase tracking-wide admin-only">Descuento Pronto Pago ($):</label>
-            <div class="input-group admin-only !border-orange-300 bg-orange-50"><input type="number" id="abc-pronto" class="text-orange-700 font-bold p-4 text-center" placeholder="Perdón de deuda"></div>
+            <label class="admin-only" style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.5rem; margin-top:1rem; text-transform:uppercase; letter-spacing:0.025em;">Descuento Pronto Pago ($):</label>
+            <div class="input-group admin-only" style="border-color:#fdba74; background:#fff7ed;"><input type="number" id="abc-pronto" style="color:#c2410c; font-weight:bold; padding:1rem; text-align:center;" placeholder="Perdón de deuda"></div>
             
-            <button class="btn-main p-4 text-lg mt-4 shadow-lg" onclick="procesarPagoManual()"><i class="fas fa-check-circle"></i> Cobrar e Imprimir</button>
-            <button class="btn-outline mt-3 p-4 bg-gray-50" onclick="document.getElementById('modal-abonar-custom').style.display='none'">Cancelar</button>
+            <button class="btn-main" style="padding:1rem; font-size:1.125rem; margin-top:1rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="procesarPagoManual()"><i class="fas fa-check-circle"></i> Cobrar e Imprimir</button>
+            <button class="btn-outline" style="margin-top:0.75rem; padding:1rem; background:#f9fafb;" onclick="document.getElementById('modal-abonar-custom').style.display='none'">Cancelar</button>
         </div>
     </div>
 
-    <div id="pantalla-empenos" class="fullscreen-modal admin-only relative z-20"><div class="modal-header"><i class="fas fa-arrow-left cursor-pointer" onclick="cerrarPantallas()"></i> Solicitudes de Empeño</div><div class="p-5 animate-pop"><button class="btn-outline !border-yellow-500 !text-yellow-600 mb-4 bg-white p-4 shadow-sm" onclick="copiarLinkEmpeno()"><i class="fas fa-link"></i> Copiar Link Público para Empeños</button><div id="lista-empenos-ui"></div></div></div>
-    <div id="pantalla-proveedores" class="fullscreen-modal admin-only relative z-20"><div class="modal-header"><i class="fas fa-arrow-left cursor-pointer" onclick="cerrarPantallas()"></i> Cuentas por Pagar</div><div class="p-5 animate-pop"><div class="card bg-orange-50 border border-orange-200"><h3 class="mb-4 text-base font-bold text-orange-600"><i class="fas fa-plus-circle"></i> Nueva Deuda a Proveedor</h3><div class="input-group !border-orange-300"><input type="text" id="prv-desc" placeholder="Proveedor / Producto"></div><div class="input-group !border-orange-300"><input type="number" id="prv-monto" placeholder="Deuda Total ($)"></div><button class="btn-main !bg-orange-500 p-4 text-base" onclick="guardarProv()">Añadir al Inventario de Deudas</button></div><div id="lista-prov-ui"></div></div></div>
-    <div id="modal-abonar-prov" class="fullscreen-modal admin-only !bg-black/80 z-[110] justify-center"><div class="card m-5 p-6 animate-pop"><h3 class="text-orange-500 mb-4 font-bold text-xl"><i class="fas fa-hand-holding-usd"></i> Abonar a Proveedor</h3><div class="input-group"><input type="number" id="abc-prov-monto" placeholder="Monto a Pagar ($)" class="text-2xl font-bold text-center p-4"></div><button class="btn-main !bg-orange-500 p-4 text-lg mt-2" onclick="procesarAbonoProv()">Registrar Pago</button><button class="btn-outline mt-3 p-4 bg-gray-50" onclick="document.getElementById('modal-abonar-prov').style.display='none'">Cancelar</button></div></div>
-    <div id="pantalla-canjes" class="fullscreen-modal admin-only relative z-20"><div class="modal-header"><i class="fas fa-arrow-left cursor-pointer" onclick="cerrarPantallas()"></i> Canjes Solicitados</div><div class="p-5 animate-pop" id="lista-canjes-ui"></div></div>
+    <div id="pantalla-crear-credito" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Nuevo Crédito</div><div class="animate-pop" style="padding:1.25rem;"><div class="input-group"><select id="cred-cliente" onchange="verificarLimite(this.value)"></select></div><div id="alerta-limite" class="alerta a-rojo oculto"></div><div class="input-group"><input type="text" id="cred-prod" placeholder="Producto/Motivo"></div><div class="input-group"><input type="text" id="cred-imei" placeholder="IMEI / Placa / Identificador"><i class="fas fa-barcode"></i></div><div class="input-group"><input type="number" id="cred-monto" placeholder="Monto Total a Cobrar ($)" oninput="calcPrevC()"></div><div class="input-group"><input type="number" id="cred-cuotas" placeholder="Cuotas Totales" oninput="calcPrevC()"></div><div class="input-group"><select id="cred-frec" onchange="calcPrevC()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="border:1px solid #ef4444; border-radius:0.75rem; padding:1rem; margin-bottom:1rem; background:#fef2f2;"><label style="font-size:0.8125rem; font-weight:bold; color:#dc2626;">Mora Automática (Opcional):</label><div style="display:flex; gap:0.5rem; margin-top:0.5rem;"><div class="input-group" style="margin:0; flex:1;"><input type="number" id="cred-mora-monto" placeholder="Monto ($)"></div><div class="input-group" style="margin:0; flex:1;"><select id="cred-mora-frec"><option value="1">Diaria</option><option value="3">Cada 3 días</option><option value="7">Semanal</option><option value="15">Quincenal</option></select></div></div></div><div class="alerta a-nar oculto" id="switch-ignorar-limite" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:0.8125rem; font-weight:bold;">Ignorar Buró / Límite</div><label class="switch"><input type="checkbox" id="cred-ignorar-lim"><span class="slider"></span></label></div><div style="background:#f0fdfa; text-align:center; padding:1rem; border-radius:0.75rem; margin-bottom:1rem;">Cuota de: <b style="font-size:1.5rem; color:#50a38d; display:block; margin-top:0.25rem;" id="cred-prev-res">$0.00</b></div><div class="input-group"><input type="date" id="cred-fecha"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="generarCredito()">Generar Crédito</button></div></div>
     
-    <div id="vista-empenos" class="oculto relative z-20 bg-gray-50 min-h-screen">
-        <div class="bg-gray-900 text-white p-6 text-center sticky top-0 z-40 rounded-b-3xl shadow-lg">
-            <h2 class="text-2xl font-black text-yellow-400 mb-1"><i class="fas fa-ring"></i> Área de Empeños</h2>
-            <p class="text-xs text-gray-300">Reciba dinero rápido por sus artículos de valor</p>
+    <div id="pantalla-productos" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Admin Catálogo</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><h3 style="color:#50a38d; font-weight:bold; margin-bottom:1rem; font-size:1rem;">Publicar Producto</h3><div class="input-group"><input type="text" id="prod-nom" placeholder="Nombre"></div><div class="input-group"><select id="prod-cat"><option value="Celulares">Celulares</option><option value="Electrodomesticos">Electrodomésticos</option><option value="Motos">Motos</option><option value="Efectivo">Efectivo</option><option value="Otros">Otros</option></select></div><div class="input-group req-stk oculto"><input type="number" id="prod-stock" placeholder="Inventario Disponible"></div><b style="font-size:0.75rem;">Fotos (Máx 3):</b><input type="file" id="prod-fotos" multiple accept="image/*" style="margin:0.5rem 0; width:100%; font-size:0.75rem;" onchange="procesarFotosProd(event)"><div class="grid-fotos" style="display:flex; gap:0.5rem; overflow-x:auto;" id="prod-fotos-preview"></div><div style="display:flex; justify-content:space-between; align-items:center; margin:1rem 0;"><b style="font-size:0.875rem;">Planes de Pago</b><button class="btn-main" style="width:auto; padding:0.5rem 0.75rem;" onclick="agregarFilaPlazo()">+ Añadir Plan</button></div><div id="lista-plazos-inputs"></div><button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem;" onclick="guardarProducto()">Publicar Producto</button></div><div id="lista-productos-admin"></div></div></div>
+
+    <div id="pantalla-crear-cliente" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> <span id="cli-titulo-pantalla">Alta Cliente</span></div><div class="animate-pop" style="padding:1.25rem;"><div class="input-group"><input type="text" id="cli-id" placeholder="Cédula"></div><div class="input-group"><input type="text" id="cli-nom" placeholder="Nombre Completo"></div><div class="input-group"><input type="number" id="cli-limite" placeholder="Límite ($) Ej: 1000" value="1000"></div><div class="input-group"><input type="tel" id="cli-cel" placeholder="Celular"></div><div class="input-group"><textarea id="cli-dir" placeholder="Dirección Exacta" rows="2"></textarea></div><div class="input-group"><textarea id="cli-nota" placeholder="Nota Interna (Admin)" rows="2"></textarea></div><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline" style="flex:1; font-size:0.75rem;" onclick="capturarGpsAdmin()"><i class="fas fa-crosshairs"></i> GPS Auto</button><div class="input-group" style="margin:0; flex:2;"><input type="url" id="cli-url-mapa" placeholder="O pegue Link Google Maps"></div></div><div id="mapa-admin-preview" style="width:100%; height:8rem; border-radius:0.75rem; display:none; margin-bottom:1rem; background:#e5e7eb;"></div><div class="input-group"><input type="text" id="cli-fiador" placeholder="Nombre y Tel. del Fiador"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="guardarCliente()">Guardar Cliente</button></div></div>
+    
+    <div id="pantalla-deudas" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cobros Rápidos</div><div style="background:#153e36; padding:1.25rem;"><div class="input-group req-qr oculto" style="margin-bottom:1rem; border-color:#22c55e; border-width:2px;"><i class="fas fa-qrcode" style="color:#22c55e; font-size:1.25rem;"></i><input type="text" id="qr-escaneado" placeholder="Escanear QR del Cliente..." onchange="procesarQrCobro(this.value)" style="font-size:1rem;"></div><input type="text" class="search-bar" style="margin-top:0; padding:1rem; font-size:1rem;" placeholder="🔍 Buscar cliente para cobrar..." onkeyup="renDeudas(this.value)"></div><div class="animate-pop" style="padding:1.25rem;" id="lista-deudas-ui"></div></div>
+
+    <div id="pantalla-empenos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes de Empeño</div><div class="animate-pop" style="padding:1.25rem;"><button class="btn-outline" style="border-color:#eab308; color:#ca8a04; margin-bottom:1rem; background:white; padding:1rem; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);" onclick="copiarLinkEmpeno()"><i class="fas fa-link"></i> Copiar Link Público para Empeños</button><div id="lista-empenos-ui"></div></div></div>
+    
+    <div id="pantalla-proveedores" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cuentas por Pagar</div><div class="animate-pop" style="padding:1.25rem;"><div class="card" style="background:#fff7ed; border:1px solid #fed7aa;"><h3 style="margin-bottom:1rem; font-size:1rem; font-weight:bold; color:#ea580c;"><i class="fas fa-plus-circle"></i> Nueva Deuda a Proveedor</h3><div class="input-group" style="border-color:#fdba74;"><input type="text" id="prv-desc" placeholder="Proveedor / Producto"></div><div class="input-group" style="border-color:#fdba74;"><input type="number" id="prv-monto" placeholder="Deuda Total ($)"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1rem;" onclick="guardarProv()">Añadir al Inventario de Deudas</button></div><div id="lista-prov-ui"></div></div></div>
+    
+    <div id="modal-abonar-prov" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#f97316; margin-bottom:1rem; font-weight:bold; font-size:1.25rem;"><i class="fas fa-hand-holding-usd"></i> Abonar a Proveedor</h3><div class="input-group"><input type="number" id="abc-prov-monto" placeholder="Monto a Pagar ($)" style="font-size:1.5rem; font-weight:bold; text-align:center; padding:1rem;"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1.125rem; margin-top:0.5rem;" onclick="procesarAbonoProv()">Registrar Pago</button><button class="btn-outline" style="margin-top:0.75rem; padding:1rem; background:#f9fafb;" onclick="document.getElementById('modal-abonar-prov').style.display='none'">Cancelar</button></div></div>
+    
+    <div id="pantalla-canjes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Canjes Solicitados</div><div class="animate-pop" style="padding:1.25rem;" id="lista-canjes-ui"></div></div>
+    
+    <div id="pantalla-boveda" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Bóveda</div><div class="animate-pop" style="padding:1.25rem;"><div class="card" style="text-align:center; background:#f59e0b; color:white;"><div style="font-size:0.875rem; margin-bottom:0.25rem;">Efectivo Asegurado</div><div style="font-size:2.5rem; font-weight:bold;" id="bov-total">$0.00</div></div><h3 style="font-size:1rem; font-weight:bold; margin-bottom:1rem; margin-top:0.5rem;">Entregas Pendientes</h3><div id="lista-boveda-ui"></div></div></div>
+    <div id="pantalla-difusion" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Campañas Masivas</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><textarea id="camp-msg" rows="4" placeholder="Escriba su mensaje aquí..."></textarea></div><div class="input-group"><select id="camp-filtro"><option value="morosos">Solo Morosos</option><option value="aldia">Clientes Al Día</option><option value="todos">Todos los Clientes</option></select></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="generarCampana()"><i class="fab fa-whatsapp"></i> Generar Lista de Envío</button></div><div id="lista-campana-ui"></div></div></div>
+    <div id="pantalla-auditoria" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Auditoría de Sistema</div><div class="animate-pop" style="padding:1.25rem;" id="lista-logs-ui"></div></div>
+    <div id="pantalla-gastos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Gastos Diarios</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="text" id="gst-desc" placeholder="Descripción (Ej: Gasolina)"></div><div class="input-group"><input type="number" id="gst-monto" placeholder="Monto ($)"></div><button class="btn-main" style="background:#ef4444; padding:1rem;" onclick="guardarGasto()">Registrar Egreso</button></div><div id="lista-gastos-ui"></div></div></div>
+    <div id="pantalla-solicitudes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes Web</div><div class="animate-pop" style="padding:1.25rem;" id="lista-solicitudes-ui"></div></div>
+    <div id="pantalla-verificar-pagos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Validar Pagos</div><div class="animate-pop" style="padding:1.25rem;" id="lista-verificacion-ui"></div></div>
+    
+    <div id="modal-gestion" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#50a38d; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Nueva Gestión</h3><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline active" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Llamada')">Llamada</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Visita')">Visita</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'WhatsApp')">WA</button></div><div class="input-group"><select id="gest-res"><option>Promesa de pago</option><option>No contesta</option></select></div><div class="input-group"><textarea id="gest-nota" placeholder="Nota..." rows="3"></textarea></div><label style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.25rem;">📅 Fecha Promesa:</label><div class="input-group"><input type="date" id="gest-fecha-promesa"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem;" onclick="guardarGestion()">Guardar</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-gestion').style.display='none'">Cancelar</button></div></div>
+    <div id="modal-editar-deuda" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#ef4444; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Editar Saldo Actual</h3><div class="input-group"><input type="number" id="edit-deuda-saldo" style="font-size:1.25rem;"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem; background:#ef4444;" onclick="guardarEdicionDeuda()">Guardar Nuevo Saldo</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-editar-deuda').style.display='none'">Cancelar</button></div></div>
+    <div id="pantalla-calculadora" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Simulador</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="number" id="sim-monto" placeholder="Monto ($)" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-int" placeholder="% Interés" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-cuotas" placeholder="Cuotas" oninput="simularCuota()"></div><div class="input-group"><select id="sim-frec" onchange="simularCuota()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="background:#153e36; color:white; padding:1rem; border-radius:0.75rem; text-align:center; margin-top:0.5rem;"><div style="font-size:0.8125rem; opacity:0.8; margin-bottom:0.25rem;">Cuota a Pagar:</div><div style="font-size:1.875rem; font-weight:bold;" id="sim-res-cuota">$0.00</div></div></div><h3 style="font-size:0.9375rem; font-weight:bold; margin-bottom:0.5rem;">Amortización (Proyección)</h3><div class="card" style="padding:0; overflow:hidden;"><div style="background:#f3f4f6; display:flex; justify-content:space-between; padding:0.75rem; font-size:0.8125rem; font-weight:bold;"><span>N°</span><span>Fecha</span><span>Monto</span></div><div id="sim-tabla-cuotas" style="max-height:15rem; overflow-y:auto;"></div></div></div></div>
+
+    <div id="pantalla-radar" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Radar Global GPS</div><div class="animate-pop" style="padding:0; height:100%;" id="mapa-radar-ui"></div></div>
+
+    <div id="modal-pazysalvo" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#22c55e; margin-bottom:1rem; font-weight:bold; font-size:1.125rem;">Certificado de Paz y Salvo</h3><div class="input-group"><textarea id="txt-pazysalvo" rows="8" style="font-size:0.8125rem; padding:0.75rem;"></textarea></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="imprimirPazSalvo()"><i class="fas fa-print"></i> Imprimir Certificado</button><button class="btn-danger" style="width:100%; margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-pazysalvo').style.display='none'">Cancelar</button></div></div>
+
+    <div id="vista-empenos" class="oculto" style="position:relative; z-index:20; background:#f9fafb; min-height:100vh;">
+        <div style="background:#111827; color:white; padding:1.5rem; text-align:center; position:sticky; top:0; z-index:40; border-radius:0 0 1.5rem 1.5rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+            <h2 style="font-size:1.5rem; font-weight:900; color:#facc15; margin-bottom:0.25rem;"><i class="fas fa-ring"></i> Área de Empeños</h2>
+            <p style="font-size:0.75rem; color:#d1d5db;">Reciba dinero rápido por sus artículos de valor</p>
         </div>
-        <div class="p-5 animate-pop mt-2">
-            <div class="card shadow-xl border border-gray-200 p-6">
-                <h3 class="font-bold text-brandDark mb-4 border-b border-gray-100 pb-2">Complete el Formulario</h3>
-                <div class="input-group bg-gray-50"><i class="fas fa-user"></i><input type="text" id="emp-nom" placeholder="Su Nombre Completo"></div>
-                <div class="input-group bg-gray-50"><i class="fas fa-phone"></i><input type="tel" id="emp-tel" placeholder="Su WhatsApp"></div>
-                <div class="input-group bg-gray-50"><i class="fas fa-box-open"></i><input type="text" id="emp-desc" placeholder="¿Qué artículo desea empeñar?"></div>
-                <div class="input-group bg-green-50 !border-green-200"><i class="fas fa-dollar-sign text-green-600"></i><input type="number" id="emp-monto" placeholder="¿Cuánto dinero necesita?" class="font-bold text-green-700"></div>
+        <div class="animate-pop" style="padding:1.25rem; margin-top:0.5rem;">
+            <div class="card" style="box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); border:1px solid #e5e7eb; padding:1.5rem;">
+                <h3 style="font-weight:bold; color:#153e36; margin-bottom:1rem; border-bottom:1px solid #f3f4f6; padding-bottom:0.5rem;">Complete el Formulario</h3>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-user"></i><input type="text" id="emp-nom" placeholder="Su Nombre Completo"></div>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-phone"></i><input type="tel" id="emp-tel" placeholder="Su WhatsApp"></div>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-box-open"></i><input type="text" id="emp-desc" placeholder="¿Qué artículo desea empeñar?"></div>
+                <div class="input-group" style="background:#f0fdf4; border-color:#bbf7d0;"><i class="fas fa-dollar-sign" style="color:#16a34a;"></i><input type="number" id="emp-monto" placeholder="¿Cuánto dinero necesita?" style="font-weight:bold; color:#15803d;"></div>
+                <div style="margin-top:1.25rem; padding:1rem; border:2px dashed #facc15; border-radius:0.75rem; background:#fefce8; text-align:center;">
+                    <b style="font-size:0.875rem; color:#a16207; display:block; margin-bottom:0.5rem;"><i class="fas fa-camera"></i> Foto de su artículo:</b>
+                    <input type="file" accept="image/*" style="width:100%; font-size:0.75rem; color:#4b5563; margin-bottom:0.75rem;" onchange="pFoto(event, b=>{empFotoB64=b; document.getElementById('emp-foto-preview').src=b; document.getElementById('emp-foto-preview').classList.remove('oculto');})">
+                    <img id="emp-foto-preview" class="oculto" style="width:100%; height:12rem; object-fit:cover; border-radius:0.75rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); margin:0 auto; border:1px solid #e5e7eb;">
+                </div>
+                <button class="btn-main" style="background:#eab308; color:#111827; padding:1rem; font-size:1rem; font-weight:900; margin-top:1.5rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="enviarSolicitudEmpeno()"><i class="fas fa-paper-plane"></i> Enviar Solicitud a Evaluación</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="vista-catalogo" class="oculto" style="position:relative; z-index:20;">
+        <div style="background:#111827; color:white; padding:1.25rem; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:40; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+            <img id="logo-catalogo" class="logo-sys oculto" style="height:3rem;">
+            <h2 style="font-size:1.25rem; font-weight:bold; letter-spacing:0.025em;">Tienda Virtual</h2>
+            <div style="position:relative; cursor:pointer; transition:transform 0.2s;" onclick="abrirCarrito()">
+                <i class="fas fa-shopping-cart" style="font-size:1.5rem;"></i>
+                <span id="cart-count" style="position:absolute; top:-0.5rem; right:-0.5rem; background:#ef4444; color:white; font-size:0.625rem; font-weight:bold; padding:0.125rem 0.375rem; border-radius:9999px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">0</span>
+            </div>
+        </div>
+        <div class="tabs-pills" style="padding:1rem 1.25rem 0.25rem 1.25rem; border:none; margin:0; background:#f9fafb;" id="cat-tabs-cat"></div>
+        <div id="cat-notas-box" class="alerta a-nar oculto animate-pop shadow-sm" style="margin:0.75rem 1.25rem; font-weight:bold;"></div>
+        <div id="cat-ref-box" class="alerta a-ver oculto animate-pop shadow-sm" style="margin:0.75rem 1.25rem; text-align:center; font-weight:bold;"><i class="fas fa-handshake"></i> Invitado Especial de: <span id="cat-ref-nom"></span></div>
+        <div class="req-cup oculto animate-pop" style="padding:0 1.25rem; margin-top:0.75rem;"><div class="input-group shadow-sm" style="margin-bottom:0;"><i class="fas fa-ticket-alt"></i><input type="text" id="cup-codigo" placeholder="Cupón de Descuento" style="text-transform:uppercase; font-weight:bold;"><button class="btn-main" style="width:auto; border-radius:0 0.75rem 0.75rem 0; padding:0 1.5rem;" onclick="aplicarCuponPub()">Aplicar</button></div></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1.25rem;" id="catalogo-publico-ui"></div>
+    </div>
+    
+    <div id="pantalla-carrito" class="fullscreen-modal" style="background:#f9fafb; z-index:30;">
+        <div class="modal-header" style="box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="document.getElementById('pantalla-carrito').style.display='none'"></i> Carrito de Compras</div>
+        <div class="animate-pop" style="padding:1.25rem; padding-bottom:5rem;">
+            <div id="carrito-items-ui"></div>
+            <div class="card" style="background:white; border:1px solid #e5e7eb; margin-top:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); padding:1.5rem;">
+                <h3 style="font-size:1.125rem; font-weight:900; margin-bottom:1.25rem; color:#153e36; border-bottom:1px solid #f3f4f6; padding-bottom:0.5rem;">Datos para el Crédito</h3>
+                <div id="chk-notas-box" class="alerta a-nar oculto"></div>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-user"></i><input type="text" id="req-nom" placeholder="Nombre Completo"></div>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-id-card"></i><input type="text" id="req-ced" placeholder="Cédula"></div>
+                <div class="input-group" style="background:#f9fafb;"><i class="fas fa-phone"></i><input type="tel" id="req-tel" placeholder="WhatsApp"></div>
                 
-                <div class="mt-5 p-4 border-2 border-dashed border-yellow-400 rounded-xl bg-yellow-50 text-center">
-                    <b class="text-sm text-yellow-700 block mb-2"><i class="fas fa-camera"></i> Foto de su artículo:</b>
-                    <input type="file" accept="image/*" class="w-full text-xs text-gray-600 mb-3" onchange="pFoto(event, b=>{empFotoB64=b; document.getElementById('emp-foto-preview').src=b; document.getElementById('emp-foto-preview').classList.remove('oculto');})">
-                    <img id="emp-foto-preview" class="w-full h-48 object-cover rounded-xl oculto shadow-md mx-auto border border-gray-200">
+                <div style="background:white; border:1px solid #e5e7eb; border-radius:0.75rem; padding:1rem; margin-bottom:1rem; font-size:0.75rem; color:#374151; display:flex; flex-direction:column; gap:0.5rem;">
+                    <b style="font-size:0.875rem;"><i class="fas fa-camera"></i> Foto Cédula:</b><input type="file" accept="image/*" capture="environment" style="width:100%; background:white; padding:0.5rem; border-radius:0.25rem; border:1px solid #e5e7eb;">
                 </div>
                 
-                <button class="btn-main !bg-yellow-500 hover:!bg-yellow-400 text-gray-900 p-4 text-base font-black mt-6 shadow-lg" onclick="enviarSolicitudEmpeno()"><i class="fas fa-paper-plane"></i> Enviar Solicitud a Evaluación</button>
+                <div class="req-slf oculto" style="background:#fef2f2; border:1px solid #fecaca; border-radius:0.75rem; padding:1rem; margin-bottom:1rem; font-size:0.75rem; color:#b91c1c; display:flex; flex-direction:column; gap:0.5rem;">
+                    <b><i class="fas fa-video" style="font-size:1.125rem;"></i> Video-Selfie de Seguridad:</b><span>Grabe un video de 3 seg mostrando su rostro junto a la cédula.</span><input type="file" accept="video/*" capture="user" style="width:100%; background:white; padding:0.5rem; border-radius:0.25rem; border:1px solid #fca5a5; font-weight:bold;">
+                </div>
+                
+                <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+                    <button class="btn-outline" style="flex:1; font-size:0.6875rem; background:white; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);" onclick="capturarGPS()"><i class="fas fa-crosshairs"></i> Compartir Mi GPS</button>
+                    <div class="input-group" style="margin:0; flex:2; background:white;"><input type="url" id="req-url-mapa" placeholder="O pegue Link de Google Maps"></div>
+                </div>
+                <div id="mapa-preview" class="oculto" style="width:100%; height:10rem; border-radius:0.75rem; margin-bottom:1.25rem; border:1px solid #e5e7eb; box-shadow:inset 0 2px 4px 0 rgba(0,0,0,0.06);"></div>
+                
+                <div id="caja-otp" class="req-otp oculto" style="border:2px solid #ef4444; padding:1.25rem; border-radius:0.75rem; margin-bottom:1.25rem; background:#fef2f2; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <label style="font-size:0.875rem; font-weight:900; color:#dc2626; display:block; text-align:center; margin-bottom:0.5rem;">CÓDIGO DE SEGURIDAD (OTP)</label>
+                    <p style="font-size:0.75rem; text-align:center; color:#ef4444; margin-bottom:0.75rem;">Solicítelo a su asesor para continuar.</p>
+                    <div class="input-group" style="margin:0;"><input type="number" id="req-otp-val" placeholder="Ej: 8492" style="text-align:center; font-weight:900; letter-spacing:0.1em; font-size:1.5rem; color:#b91c1c; padding:1rem; background:white;"></div>
+                </div>
+                
+                <button class="btn-main" style="padding:1rem; font-size:1.125rem; margin-top:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="mostrarContrato()"><i class="fas fa-file-signature"></i> Proceder a Firmar Contrato</button>
             </div>
         </div>
     </div>
 
-    <div id="vista-catalogo" class="oculto relative z-20"><div class="bg-gray-900 text-white p-5 flex justify-between items-center sticky top-0 z-40 shadow-md"><img id="logo-catalogo" class="logo-sys oculto h-12"><h2 class="text-xl font-bold tracking-wide">Tienda Virtual</h2><div class="relative cursor-pointer transition-transform hover:scale-110" onclick="abrirCarrito()"><i class="fas fa-shopping-cart text-2xl"></i><span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md">0</span></div></div><div class="tabs-pills !px-5 !border-none pt-4 bg-gray-50" id="cat-tabs-cat"></div><div id="cat-notas-box" class="alerta a-nar oculto mx-5 font-bold animate-pop shadow-sm mt-2"></div><div id="cat-ref-box" class="alerta a-ver oculto mx-5 text-center font-bold animate-pop shadow-sm"><i class="fas fa-handshake"></i> Invitado Especial de: <span id="cat-ref-nom"></span></div><div class="req-cup oculto px-5 mt-3 animate-pop"><div class="input-group !mb-0 shadow-sm"><i class="fas fa-ticket-alt"></i><input type="text" id="cup-codigo" placeholder="Cupón de Descuento" class="uppercase font-bold"><button class="btn-main w-auto !rounded-l-none px-6" onclick="aplicarCuponPub()">Aplicar</button></div></div><div class="grid grid-cols-2 gap-4 p-5" id="catalogo-publico-ui"></div></div>
-    
-    <div id="pantalla-carrito" class="fullscreen-modal bg-gray-50 relative z-30"><div class="modal-header shadow-md"><i class="fas fa-arrow-left cursor-pointer" onclick="document.getElementById('pantalla-carrito').style.display='none'"></i> Carrito de Compras</div><div class="p-5 pb-20 animate-pop"><div id="carrito-items-ui"></div><div class="card bg-white border border-gray-200 mt-6 shadow-xl p-6"><h3 class="text-lg font-black mb-5 text-brandDark border-b border-gray-100 pb-2">Datos para el Crédito</h3><div id="chk-notas-box" class="alerta a-nar oculto"></div><div class="input-group bg-gray-50"><i class="fas fa-user"></i><input type="text" id="req-nom" placeholder="Nombre Completo"></div><div class="input-group bg-gray-50"><i class="fas fa-id-card"></i><input type="text" id="req-ced" placeholder="Cédula"></div><div class="input-group bg-gray-50"><i class="fas fa-phone"></i><input type="tel" id="req-tel" placeholder="WhatsApp"></div><div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4 text-xs text-gray-700 flex flex-col gap-2"><b class="text-sm"><i class="fas fa-camera"></i> Foto Cédula:</b><input type="file" accept="image/*" capture="environment" class="w-full bg-white p-2 rounded border border-gray-200"></div><div class="req-slf oculto bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-xs text-red-700 flex flex-col gap-2"><b><i class="fas fa-video text-lg"></i> Video-Selfie de Seguridad:</b><span>Grabe un video de 3 seg mostrando su rostro junto a la cédula.</span><input type="file" accept="video/*" capture="user" class="w-full bg-white p-2 rounded border border-red-200 font-bold"></div><div class="flex gap-2 mb-5"><button class="btn-outline flex-1 text-xs bg-white shadow-sm" onclick="capturarGPS()"><i class="fas fa-crosshairs"></i> Compartir Mi GPS</button><div class="input-group !mb-0 flex-[2] bg-white"><input type="url" id="req-url-mapa" placeholder="O pegue Link de Google Maps"></div></div><div id="mapa-preview" class="w-full h-40 rounded-xl hidden mb-5 border border-gray-200 shadow-inner"></div><div id="caja-otp" class="req-otp oculto border-2 border-red-500 p-5 rounded-xl mb-5 bg-red-50 shadow-md"><label class="text-sm font-black text-red-600 block text-center mb-2">CÓDIGO DE SEGURIDAD (OTP)</label><p class="text-xs text-center text-red-500 mb-3">Solicítelo a su asesor para continuar.</p><div class="input-group !mb-0"><input type="number" id="req-otp-val" placeholder="Ej: 8492" class="text-center font-black tracking-widest text-2xl text-red-700 p-4 bg-white"></div></div><button class="btn-main p-4 text-lg mt-3 shadow-lg" onclick="mostrarContrato()"><i class="fas fa-file-signature"></i> Proceder a Firmar Contrato</button></div></div></div>
+    <div id="modal-contrato" class="fullscreen-modal" style="background:rgba(0,0,0,0.9); z-index:110; padding:1rem; justify-content:center;">
+        <div class="card animate-pop" style="max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            <h3 style="text-align:center; font-size:1.25rem; font-weight:900; margin-bottom:1.25rem; color:#153e36; text-transform:uppercase;">Contrato Legal</h3>
+            <div class="input-group" style="background:#f9fafb;"><select id="sel-plantilla-cont" onchange="cambiarPlantilla()" style="font-weight:bold;"></select></div>
+            <div id="ui-texto-contrato" style="font-size:0.75rem; line-height:1.8; color:#374151; margin-bottom:1.25rem; max-height:14rem; overflow-y:auto; border:1px solid #e5e7eb; padding:1.25rem; border-radius:0.75rem; background:#f9fafb; text-align:justify;"></div>
+            <b style="font-size:0.875rem; color:#153e36; font-weight:bold; display:block; margin-bottom:0.75rem; border-top:1px solid #f3f4f6; padding-top:0.75rem;"><i class="fas fa-pen-nib"></i> Firme aquí (Ocupe todo el recuadro):</b>
+            <canvas id="canvasFirma" class="canvas-firma" style="height:10rem; box-shadow:inset 0 2px 4px 0 rgba(0,0,0,0.06); background:#f9fafb;"></canvas>
+            <button class="btn-outline" style="padding:0.75rem; margin-bottom:1.25rem; font-size:0.875rem; background:white;" onclick="limpiarFirma()"><i class="fas fa-eraser"></i> Limpiar Firma</button>
+            <button class="btn-main" style="padding:1rem; font-size:1.125rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="enviarSolicitudFirmada()"><i class="fas fa-paper-plane"></i> Aceptar Términos y Enviar</button>
+        </div>
+    </div>
 
-    <div id="modal-contrato" class="fullscreen-modal !bg-black/90 z-[110] p-4 justify-center"><div class="card max-h-[90vh] overflow-y-auto p-6 animate-pop shadow-2xl"><h3 class="text-center text-xl font-black mb-5 text-brandDark uppercase">Contrato Legal</h3><div class="input-group bg-gray-50"><select id="sel-plantilla-cont" onchange="cambiarPlantilla()" class="font-bold"></select></div><div id="ui-texto-contrato" class="text-xs leading-[1.8] text-gray-700 mb-5 max-h-56 overflow-y-auto border border-gray-200 p-5 rounded-xl bg-gray-50 text-justify"></div><b class="text-sm text-brandDark font-bold block mb-3 border-t border-gray-100 pt-3"><i class="fas fa-pen-nib"></i> Firme aquí (Ocupe todo el recuadro):</b><canvas id="canvasFirma" class="canvas-firma h-40 shadow-inner bg-gray-50"></canvas><button class="btn-outline p-3 mb-5 text-sm bg-white" onclick="limpiarFirma()"><i class="fas fa-eraser"></i> Limpiar Firma</button><button class="btn-main p-4 text-lg shadow-lg" onclick="enviarSolicitudFirmada()"><i class="fas fa-paper-plane"></i> Aceptar Términos y Enviar</button></div></div>
+    <div id="vista-portal" class="oculto" style="position:relative; z-index:20;">
+        <div class="animate-pop" style="background:#153e36; color:white; padding:2.5rem 1.25rem 2rem 1.25rem; text-align:center; border-radius:0 0 1.875rem 1.875rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+            <img id="logo-portal" class="logo-sys oculto" style="height:4rem; margin:0 auto 0.5rem auto; display:block;">
+            <h2 id="port-nom" style="font-size:1.5rem; font-weight:bold;"></h2>
+            <p style="font-size:0.875rem; opacity:0.8; margin-top:0.25rem;">Estado de Cuenta Oficial</p>
+        </div>
+        <div style="padding:1.25rem; margin-top:-1.25rem;">
+            <div id="port-nota-box" class="oculto alerta animate-pop" style="font-weight:bold; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);"></div>
+            <div class="card req-qr oculto animate-pop" style="text-align:center;"><img id="port-qr" class="qr-code"> <p style="font-size:0.75rem; color:#6b7280; margin-top:0.5rem;">Muestra este código para pagar</p></div>
+            <div class="card animate-pop" style="text-align:center;">
+                <div style="font-size:2.5rem; font-weight:bold; color:#ef4444; margin:0.5rem 0;" id="port-saldo">$0.00</div>
+                <div id="port-alerta-mora" class="alerta a-rojo oculto" style="margin-top:1rem; font-weight:bold; text-align:left;"></div>
+                <button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="document.getElementById('modal-reportar-pago').style.display='flex'"><i class="fas fa-camera"></i> Reportar Transferencia Bancaria</button>
+            </div>
+            <div id="port-referidos" class="card oculto req-ref animate-pop" style="background:#f0fdfa; border:1px solid #50a38d; text-align:center;">
+                <h3 style="color:#153e36; font-weight:bold; font-size:1rem;"><i class="fas fa-gift"></i> Gana Refiriendo</h3>
+                <div style="font-size:1.5rem; font-weight:bold; color:#50a38d; margin:0.5rem 0;">Billetera: <span id="port-bil-disp">$0.00</span></div>
+                <button class="btn-main" style="font-size:0.875rem; padding:0.75rem; margin-top:0.5rem;" onclick="alertaReferidor()"><i class="fas fa-share-alt"></i> Invitar Amigo</button>
+            </div>
+            <div id="port-puntos" class="card oculto req-pts animate-pop" style="background:#faf5ff; border:1px solid #d8b4fe; text-align:center;">
+                <h3 style="color:#9333ea; font-weight:bold; font-size:1rem;"><i class="fas fa-star" style="color:#facc15;"></i> Puntos Acumulados: <span id="port-pts-disp" style="font-size:1.25rem;">0</span></h3>
+                <button class="btn-outline" style="border-color:#a855f7; color:#9333ea; margin-top:0.5rem; font-size:0.8125rem; padding:0.5rem;" onclick="abrirTiendaPuntos()">Ver Tienda de Premios</button>
+            </div>
+            <h3 style="font-size:1rem; font-weight:bold; margin-bottom:0.75rem; margin-top:0.5rem; padding-left:0.25rem;">Mis Cuotas</h3>
+            <div id="port-cuotas-ui"></div>
+        </div>
+    </div>
+    
+    <div id="vista-fiador" class="oculto" style="position:relative; z-index:20;">
+        <div class="header-bg animate-pop" style="text-align:center;">
+            <h2 style="font-size:1.25rem; font-weight:bold;">Portal del Fiador</h2>
+            <p style="font-size:0.8125rem; margin-top:0.25rem;">Vigilancia en tiempo real de: <b id="fia-cli-nom" style="color:#fde047;"></b></p>
+        </div>
+        <div class="animate-pop" style="padding:1.25rem; margin-top:-1.25rem;">
+            <div class="card" style="text-align:center; padding:1.5rem;">
+                <div style="font-size:0.875rem; color:#6b7280;">Deuda Restante del Cliente:</div>
+                <div style="font-size:2.25rem; font-weight:bold; color:#ef4444; margin:0.75rem 0;" id="fia-saldo">$0.00</div>
+                <div id="fia-alerta" style="margin-top:1rem; font-size:0.875rem; background:#f9fafb; padding:0.75rem; border-radius:0.75rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reportar-pago" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end; z-index:110;">
+        <div class="animate-pop" style="background:white; border-radius:1.25rem 1.25rem 0 0; padding:1.5rem;">
+            <h3 style="color:#50a38d; margin-bottom:1.25rem; font-weight:bold; font-size:1rem;">Reportar Transferencia</h3>
+            <div class="input-group"><select id="rep-cuota-sel"></select></div>
+            <div class="input-group"><input type="number" id="rep-monto" placeholder="Monto exacto transferido ($)"></div>
+            <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:0.75rem; padding:0.75rem; margin-bottom:1rem; font-size:0.75rem; color:#4b5563; display:flex; align-items:center; gap:0.75rem; margin-top:0.5rem;">
+                <i class="fas fa-image" style="font-size:1.125rem;"></i>
+                <input type="file" accept="image/*" id="rep-foto" style="width:100%;" onchange="pFoto(event, b=>{rFb64=b; document.getElementById('rep-foto-preview').src=b; document.getElementById('rep-foto-preview').classList.remove('oculto');})">
+            </div>
+            <img id="rep-foto-preview" class="oculto" style="width:100%; max-height:10rem; object-fit:contain; margin-bottom:1rem; border-radius:0.5rem; border:1px solid #e5e7eb;">
+            <button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="enviarReportePago()">Enviar a Verificación Admin</button>
+            <button class="btn-outline" style="margin-top:0.75rem; padding:1rem;" onclick="document.getElementById('modal-reportar-pago').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+    
+    <div id="modal-ref-aviso" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;">
+        <div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;">
+            <h3 style="color:#ef4444; margin-bottom:1rem; font-weight:bold; font-size:1rem;"><i class="fas fa-exclamation-triangle"></i> Aviso Legal de Responsabilidad</h3>
+            <p style="font-size:0.8125rem; color:#4b5563; text-align:justify; margin-bottom:1.25rem; line-height:1.6;">Al recomendar a un amigo para ganar saldo, usted se convierte automáticamente en su <b>FIADOR SOLIDARIO (Codeudor)</b>. Si la persona que usted invita incumple con sus pagos, la deuda será transferida a su cuenta personal y usted deberá asumirla. ¿Acepta esta responsabilidad?</p>
+            <button class="btn-main" style="background:#22c55e; margin-bottom:0.75rem; padding:1rem; font-size:0.875rem;" onclick="aceptarYCopiarRef()">Sí, Acepto la Responsabilidad y el Link</button>
+            <button class="btn-danger" style="width:100%; padding:1rem; font-size:0.875rem;" onclick="document.getElementById('modal-ref-aviso').style.display='none'">No, Cancelar</button>
+        </div>
+    </div>
+
+    <div id="pantalla-tienda-puntos" class="fullscreen-modal" style="z-index:30;">
+        <div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="document.getElementById('pantalla-tienda-puntos').style.display='none'"></i> Tienda de Premios</div>
+        <div class="animate-pop" style="padding:1.25rem;" id="lista-premios-ui"></div>
+    </div>
 
     <div id="area-impresion" class="oculto">
-        <div id="print-factura" class="oculto"><div class="text-center mb-3"><img id="print-logo" class="oculto max-h-16 mb-2 mx-auto"><h2 class="m-0 text-lg font-bold">RECIBO OFICIAL</h2><div id="print-fec" class="text-[10px]"></div></div><div class="border-t border-dashed border-black my-2"></div><div class="text-xs leading-relaxed"><b>Atiende:</b> <span id="print-usr"></span><br><b>Cliente:</b> <span id="print-cli"></span><br><b>Prod:</b> <span id="print-ref"></span><br><b>Cuota:</b> <span id="print-cuota"></span></div><div class="border-t border-dashed border-black my-2"></div><table class="w-full text-xs"><tr><td><b>Abono:</b></td><td class="text-right"><b id="print-monto"></b></td></tr><tr><td>Desc PP/Bil:</td><td class="text-right" id="print-desc"></td></tr><tr class="req-tax"><td class="pt-1 text-[10px]">Subtotal:</td><td class="text-right pt-1 text-[10px]" id="print-sub"></td></tr><tr class="req-tax"><td class="text-[10px]">Impuesto:</td><td class="text-right text-[10px]" id="print-tax"></td></tr><tr><td class="pt-2 text-sm font-bold">SALDO DEUDA:</td><td class="text-right pt-2 text-sm font-bold" id="print-saldo"></td></tr></table><div class="text-center text-[10px] mt-4">¡Gracias por su pago!<br><i>Generado por Sistema Élite V24</i></div></div>
+        <div id="print-factura" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><img id="print-logo" class="oculto" style="max-height:4rem; margin-bottom:0.5rem; margin-left:auto; margin-right:auto;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold;">RECIBO OFICIAL</h2><div id="print-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem; line-height:1.6;"><b>Atiende:</b> <span id="print-usr"></span><br><b>Cliente:</b> <span id="print-cli"></span><br><b>Prod:</b> <span id="print-ref"></span><br><b>Cuota:</b> <span id="print-cuota"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><table style="width:100%; font-size:0.75rem;"><tr><td><b>Abono:</b></td><td style="text-align:right;"><b id="print-monto"></b></td></tr><tr><td>Desc PP/Bil:</td><td style="text-align:right;" id="print-desc"></td></tr><tr class="req-tax"><td style="padding-top:0.25rem; font-size:0.625rem;">Subtotal:</td><td style="text-align:right; padding-top:0.25rem; font-size:0.625rem;" id="print-sub"></td></tr><tr class="req-tax"><td style="font-size:0.625rem;">Impuesto:</td><td style="text-align:right; font-size:0.625rem;" id="print-tax"></td></tr><tr><td style="padding-top:0.5rem; font-size:0.875rem; font-weight:bold;">SALDO DEUDA:</td><td style="text-align:right; padding-top:0.5rem; font-size:0.875rem; font-weight:bold;" id="print-saldo"></td></tr></table><img id="print-qr" class="qr-code req-qr oculto"><div style="text-align:center; font-size:0.625rem; margin-top:1rem;">¡Gracias por su pago!<br><i>Generado por Sistema Élite</i></div></div>
         
-        <div id="print-cierre" class="oculto"><div class="text-center mb-3"><h2 class="m-0 text-lg font-bold">CIERRE DE CAJA</h2><div id="cierre-fec" class="text-[10px]"></div></div><div class="border-t border-dashed border-black my-2"></div><div class="text-xs"><b>Cobrador:</b> <span id="cierre-usr"></span></div><div class="border-t border-dashed border-black my-2"></div><table class="w-full text-xs"><tr><td>Total Cobrado Hoy:</td><td class="text-right" id="cierre-tot"></td></tr><tr><td>Comisión Generada:</td><td class="text-right" id="cierre-com"></td></tr><tr><td class="pt-3 text-sm font-bold">TOTAL A ENTREGAR:</td><td class="text-right pt-3 text-sm font-bold" id="cierre-entregar"></td></tr></table><div class="text-center text-[10px] mt-6">_____________________<br>Firma Cobrador</div></div>
+        <div id="print-cierre" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold;">CIERRE DE CAJA</h2><div id="cierre-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem;"><b>Cobrador:</b> <span id="cierre-usr"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><table style="width:100%; font-size:0.75rem;"><tr><td>Total Cobrado Hoy:</td><td style="text-align:right;" id="cierre-tot"></td></tr><tr><td>Comisión Generada:</td><td style="text-align:right;" id="cierre-com"></td></tr><tr><td style="padding-top:0.75rem; font-size:0.875rem; font-weight:bold;">TOTAL A ENTREGAR:</td><td style="text-align:right; padding-top:0.75rem; font-size:0.875rem; font-weight:bold;" id="cierre-entregar"></td></tr></table><div style="text-align:center; font-size:0.625rem; margin-top:1.5rem;">_____________________<br>Firma Cobrador</div></div>
         
-        <div id="print-retiro" class="oculto"><div class="text-center mb-3"><h2 class="m-0 text-lg font-bold text-red-600">ORDEN DE RETIRO</h2><div id="ret-fec" class="text-[10px]"></div></div><div class="border-t border-dashed border-black my-2"></div><div class="text-xs leading-relaxed"><b>Cliente:</b> <span id="ret-cli"></span><br><b>Cédula:</b> <span id="ret-ced"></span><br><b>Dirección:</b> <span id="ret-dir"></span></div><div class="border-t border-dashed border-black my-2"></div><div class="text-[10px] text-justify mt-3 leading-relaxed">Por la presente, y ante el incumplimiento de las obligaciones establecidas en el contrato de financiamiento, autorizo irrevocablemente el retiro de la mercancía. FIRMA CLIENTE: _____________________</div></div>
+        <div id="print-retiro" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold; color:#dc2626;">ORDEN DE RETIRO</h2><div id="ret-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem; line-height:1.6;"><b>Cliente:</b> <span id="ret-cli"></span><br><b>Cédula:</b> <span id="ret-ced"></span><br><b>Dirección:</b> <span id="ret-dir"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.625rem; text-align:justify; margin-top:0.75rem; line-height:1.6;">Por la presente, y ante el incumplimiento de las obligaciones establecidas en el contrato de financiamiento, autorizo irrevocablemente el retiro de la mercancía. FIRMA CLIENTE: _____________________</div></div>
         
-        <div id="print-pazysalvo" class="oculto"><div class="text-center mb-4"><h2 class="m-0 text-xl font-bold">CERTIFICADO DE PAZ Y SALVO</h2><div class="text-[10px] mt-1" id="paz-fec"></div></div><div class="text-xs leading-[1.8] text-justify p-2" id="paz-txt"></div><div class="text-center mt-10 text-xs">_______________________<br>Firma Autorizada</div></div>
+        <div id="print-pazysalvo" class="oculto"><div style="text-align:center; margin-bottom:1rem;"><h2 style="margin:0; font-size:1.25rem; font-weight:bold;">CERTIFICADO DE PAZ Y SALVO</h2><div style="font-size:0.625rem; margin-top:0.25rem;" id="paz-fec"></div></div><div style="font-size:0.75rem; line-height:1.8; text-align:justify; padding:0.5rem;" id="paz-txt"></div><div style="text-align:center; margin-top:2.5rem; font-size:0.75rem;">_______________________<br>Firma Autorizada</div></div>
         
-        <div id="print-reporte-mensual" class="oculto p-6 bg-white w-[800px] mx-auto text-black">
-            <div class="text-center mb-8 border-b-4 border-black pb-4">
-                <h1 class="text-2xl font-black uppercase tracking-widest">REPORTE FINANCIERO MENSUAL</h1>
-                <p class="text-sm mt-2 font-bold" id="rep-mes-fecha"></p>
+        <div id="print-reporte-mensual" class="oculto" style="padding:1.5rem; background:white; width:800px; margin:0 auto; color:black;">
+            <div style="text-align:center; margin-bottom:2rem; border-bottom:4px solid black; padding-bottom:1rem;">
+                <h1 style="font-size:1.5rem; font-weight:900; text-transform:uppercase; letter-spacing:0.1em;">REPORTE FINANCIERO MENSUAL</h1>
+                <p style="font-size:0.875rem; margin-top:0.5rem; font-weight:bold;" id="rep-mes-fecha"></p>
             </div>
-            <div class="flex justify-between gap-6 mb-8">
-                <div class="flex-1">
-                    <h3 class="font-bold text-sm mb-2 uppercase border-b border-gray-300 pb-1">1. INGRESOS (Entradas de Caja)</h3>
-                    <table class="w-full text-sm border-collapse">
-                        <tr><td class="py-2 border-b border-gray-200">En Efectivo Físico:</td><td class="text-right py-2 border-b border-gray-200" id="rep-mes-efe"></td></tr>
-                        <tr><td class="py-2 border-b border-gray-200">En Bancos (Transf):</td><td class="text-right py-2 border-b border-gray-200" id="rep-mes-bco"></td></tr>
-                        <tr><td class="py-2 border-b border-gray-200">Billeteras (Yappy/Nequi):</td><td class="text-right py-2 border-b border-gray-200" id="rep-mes-yap"></td></tr>
-                        <tr class="bg-gray-50"><td class="py-3 font-bold text-green-700">TOTAL INGRESOS:</td><td class="text-right py-3 font-bold text-green-700" id="rep-mes-ingresos"></td></tr>
+            <div style="display:flex; justify-content:space-between; gap:1.5rem; margin-bottom:2rem;">
+                <div style="flex:1;">
+                    <h3 style="font-weight:bold; font-size:0.875rem; margin-bottom:0.5rem; text-transform:uppercase; border-bottom:1px solid #d1d5db; padding-bottom:0.25rem;">1. INGRESOS (Entradas de Caja)</h3>
+                    <table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+                        <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">En Efectivo Físico:</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb;" id="rep-mes-efe"></td></tr>
+                        <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">En Bancos (Transf):</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb;" id="rep-mes-bco"></td></tr>
+                        <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">Billeteras (Yappy/Nequi):</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb;" id="rep-mes-yap"></td></tr>
+                        <tr style="background:#f9fafb;"><td style="padding:0.75rem 0; font-weight:bold; color:#15803d;">TOTAL INGRESOS:</td><td style="text-align:right; padding:0.75rem 0; font-weight:bold; color:#15803d;" id="rep-mes-ingresos"></td></tr>
                     </table>
                 </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-sm mb-2 uppercase border-b border-gray-300 pb-1">2. EGRESOS (Salidas de Caja)</h3>
-                    <table class="w-full text-sm border-collapse">
-                        <tr><td class="py-2 border-b border-gray-200">Pagos a Proveedores y Gastos:</td><td class="text-right py-2 border-b border-gray-200" id="rep-mes-egresos"></td></tr>
+                <div style="flex:1;">
+                    <h3 style="font-weight:bold; font-size:0.875rem; margin-bottom:0.5rem; text-transform:uppercase; border-bottom:1px solid #d1d5db; padding-bottom:0.25rem;">2. EGRESOS (Salidas de Caja)</h3>
+                    <table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+                        <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">Pagos a Proveedores y Gastos:</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb;" id="rep-mes-egresos"></td></tr>
                     </table>
                 </div>
             </div>
             
-            <div class="bg-gray-100 p-4 rounded-lg mb-8 flex justify-between items-center border-2 border-black">
-                <div class="font-black text-lg">FLUJO NETO DEL MES:</div>
-                <div class="font-black text-2xl" id="rep-mes-neta"></div>
+            <div style="background:#f3f4f6; padding:1rem; border-radius:0.5rem; margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; border:2px solid black;">
+                <div style="font-weight:900; font-size:1.125rem;">FLUJO NETO DEL MES:</div>
+                <div style="font-weight:900; font-size:1.5rem;" id="rep-mes-neta"></div>
             </div>
 
-            <h3 class="font-bold text-sm mb-2 uppercase border-b border-gray-300 pb-1">3. RENDIMIENTO Y CAPITAL EN CALLE</h3>
-            <table class="w-full text-sm border-collapse mb-10">
-                <tr><td class="py-2 border-b border-gray-200">Total Créditos Aprobados este mes (Cuentas por Cobrar):</td><td class="text-right py-2 border-b border-gray-200 font-bold text-blue-700" id="rep-mes-calle"></td></tr>
+            <h3 style="font-weight:bold; font-size:0.875rem; margin-bottom:0.5rem; text-transform:uppercase; border-bottom:1px solid #d1d5db; padding-bottom:0.25rem;">3. RENDIMIENTO Y CAPITAL EN CALLE</h3>
+            <table style="width:100%; font-size:0.875rem; border-collapse:collapse; margin-bottom:2.5rem;">
+                <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">Total Créditos Aprobados este mes (Cuentas por Cobrar):</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb; font-weight:bold; color:#1d4ed8;" id="rep-mes-calle"></td></tr>
             </table>
             
-            <div class="text-center mt-24 text-sm font-bold">
+            <div style="text-align:center; margin-top:6rem; font-size:0.875rem; font-weight:bold;">
                 ___________________________________<br>Firma y Sello de Gerencia Administradora
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN OFICIAL (USANDO TUS CLAVES)
         const firebaseConfig = {
             apiKey: "AIzaSyD8QbMs2k2IkqNJt0AdqwGYI4X_h93qfe0",
             authDomain: "venta-a-credito-ea35d.firebaseapp.com",
@@ -454,29 +612,24 @@
             appId: "1:408912139997:web:6d7259e5a45b4e03abed34"
         };
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref('sistema_v24_elite_pro'); // Nodo limpio para V24
+        const dbRef = firebase.database().ref('sistema_v26_elite_pro'); 
         
-        // SISTEMA OFFLINE-FIRST
-        let db = JSON.parse(localStorage.getItem('sys_v24_backup')) || null;
+        let db = JSON.parse(localStorage.getItem('sys_v26_backup')) || null;
         let isOnline = false;
         
         let rol='Admin'; let refId=null; let empFotoB64=''; let loc={lat:'',lng:''}; let carrito=[]; let catFilter='Todos';
         let snd=new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); snd.load();
         
-        // INDICADOR DE CONEXIÓN ROBUSTO
         firebase.database().ref('.info/connected').on('value', function(snap) {
             isOnline = snap.val() === true;
             const el = document.getElementById('status-conexion');
             const icon = document.getElementById('icon-conn');
             const txt = document.getElementById('text-conn');
             if (isOnline) {
-                el.classList.remove('bg-red-500'); el.classList.add('bg-green-500');
-                icon.className = 'fas fa-wifi'; txt.innerText = 'EN LÍNEA';
+                el.style.background = '#22c55e'; icon.className = 'fas fa-wifi'; txt.innerText = 'EN LÍNEA';
                 setTimeout(() => el.style.opacity = '0', 3000);
             } else {
-                el.style.opacity = '1';
-                el.classList.remove('bg-green-500'); el.classList.add('bg-red-500');
-                icon.className = 'fas fa-exclamation-triangle'; txt.innerText = 'SIN CONEXIÓN';
+                el.style.opacity = '1'; el.style.background = '#ef4444'; icon.className = 'fas fa-exclamation-triangle'; txt.innerText = 'SIN CONEXIÓN';
             }
         });
 
@@ -525,14 +678,13 @@
         dbRef.on('value', (s)=>{
             if(s.val()) {
                 db = asegurarDB(s.val());
-                localStorage.setItem('sys_v24_backup', JSON.stringify(db)); 
+                localStorage.setItem('sys_v26_backup', JSON.stringify(db)); 
                 uiMods(); refrescarVistasActivas();
             }
         });
 
-        // AHORA SÍ GUARDARÁ TODO
         function guardarDB(){ 
-            localStorage.setItem('sys_v24_backup', JSON.stringify(db));
+            localStorage.setItem('sys_v26_backup', JSON.stringify(db));
             if(isOnline) dbRef.set(db); 
             uiMods(); 
         }
@@ -614,14 +766,14 @@
                     document.getElementById('badge-solicitudes').innerText=solPend; 
                     if(solPend>0){ document.getElementById('badge-solicitudes').classList.remove('oculto'); document.getElementById('bell-notif').classList.add('bell-ring'); snd.play().catch(e=>{}); } 
                     else { document.getElementById('badge-solicitudes').classList.add('oculto'); document.getElementById('bell-notif').classList.remove('bell-ring'); } 
-                    let ap=''; db.pagosPendientes.forEach((p,i)=>{const c=db.clientes.find(x=>x.id===p.cId); ap+=`<div class="card border-l-4 border-blue-500 mb-2 shadow-md"><b>Transferencia de ${c.nombre} ($${p.monto})</b><button class="btn-main py-2 mt-2 text-xs" onclick="verificarPago(${i})">Revisar Baucher</button></div>`;}); document.getElementById('alertas-pagos-pendientes').innerHTML=ap; 
+                    let ap=''; db.pagosPendientes.forEach((p,i)=>{const c=db.clientes.find(x=>x.id===p.cId); ap+=`<div class="card" style="border-left:4px solid #3b82f6; margin-bottom:0.5rem; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);"><b style="font-size:0.875rem;">Transf. de ${c.nombre} ($${p.monto})</b><button class="btn-main" style="padding:0.5rem; margin-top:0.5rem; font-size:0.75rem;" onclick="verificarPago(${i})">Revisar Baucher</button></div>`;}); document.getElementById('alertas-pagos-pendientes').innerHTML=ap; 
                 }
                 
                 let tot=0,cob=0,gst=0,cobH=0; let al=''; const hoy=new Date(); let cR={}; let d7=[0,0,0,0,0,0,0];
                 
                 db.clientes.forEach(c=>{
                     c.creditos.forEach(cr=>{
-                        let dM=0; if(!cr.congeladoHasta || new Date(cr.congeladoHasta)<hoy){ cr.cuotas.forEach(cu=>{ const v=new Date(cu.vence); if(v<hoy&&cu.abonado<cu.val){ const d=Math.floor((hoy-v)/86400000); if(cr.moraMonto&&cr.moraFrec){dM+=Math.floor(d/cr.moraFrec)*cr.moraMonto;} al+=`<div class="alerta a-rojo shadow-sm"><div><b>${c.nombre}</b><br><span class="text-xs">Atraso ${d}d | Debe $${(cu.val-cu.abonado).toFixed(2)}</span></div><a href="https://wa.me/${c.telefono}?text=Aviso de cuota vencida" target="_blank" class="btn-main w-auto px-4 py-2 !bg-green-500 mt-2"><i class="fab fa-whatsapp"></i></a></div>`; } }); }
+                        let dM=0; if(!cr.congeladoHasta || new Date(cr.congeladoHasta)<hoy){ cr.cuotas.forEach(cu=>{ const v=new Date(cu.vence); if(v<hoy&&cu.abonado<cu.val){ const d=Math.floor((hoy-v)/86400000); if(cr.moraMonto&&cr.moraFrec){dM+=Math.floor(d/cr.moraFrec)*cr.moraMonto;} al+=`<div class="alerta a-rojo" style="box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);"><div><b>${c.nombre}</b><br><span style="font-size:0.75rem;">Atraso ${d}d | Debe $${(cu.val-cu.abonado).toFixed(2)}</span></div><a href="https://wa.me/${c.telefono}?text=Aviso de cuota vencida" target="_blank" class="btn-main" style="width:auto; padding:0.5rem 1rem; background:#22c55e; margin-top:0.5rem;"><i class="fab fa-whatsapp"></i></a></div>`; } }); }
                         let okC=true; if(fDash==='hoy'&&new Date(cr.fecha).toLocaleDateString()!==hoy.toLocaleDateString())okC=false; if(fDash==='7dias'&&(hoy-new Date(cr.fecha))>7*86400000)okC=false; if(okC) tot+=(cr.monto+dM);
                     });
                     c.historial.forEach(h=>{
@@ -639,18 +791,16 @@
 
                 document.getElementById('alertas-dashboard').innerHTML=al; 
                 document.getElementById('dash-cobrado').innerText=`$${cob.toFixed(2)}`;
-                
                 if(db.config.mod.bil) { document.getElementById('dash-efectivo').innerText=`$${efe.toFixed(2)}`; document.getElementById('dash-banco').innerText=`$${bco.toFixed(2)}`; document.getElementById('dash-yappy').innerText=`$${yap.toFixed(2)}`; }
 
                 if(rol==='Admin'){ 
                     document.getElementById('dash-gastos').innerText=`$${gst.toFixed(2)}`; document.getElementById('dash-neta').innerText=`$${(cob-gst).toFixed(2)}`; document.getElementById('dash-pendiente').innerText=`$${(tot-cob).toFixed(2)}`; 
-                    let cRt=''; for(let k in cR)cRt+=`<div class="flex justify-between border-b border-gray-100 py-2 text-sm"><span>${k}</span><b class="text-brandDark">$${cR[k].toFixed(2)}</b></div>`; document.getElementById('dash-rendimiento-cobradores').innerHTML=cRt||'<span class="text-gray-400">Sin cobros de empleados hoy.</span>';
-                    if(db.config.mod.gra){ const max=Math.max(...d7)||1; let chHtml='', lblHtml=''; d7.forEach((v,i)=>{ const h=(v/max)*80; chHtml+=`<div class="chart-bar hover:bg-brandDark transition-colors" style="height:${h}px;" title="$${v.toFixed(2)}"></div>`; const fd=new Date(); fd.setDate(hoy.getDate()-(6-i)); lblHtml+=`<span>${fd.getDate()}/${fd.getMonth()+1}</span>`; }); document.getElementById('grafico-barras-ui').innerHTML=chHtml; document.getElementById('grafico-fechas-ui').innerHTML=lblHtml; }
+                    let cRt=''; for(let k in cR)cRt+=`<div style="display:flex; justify-content:space-between; border-bottom:1px solid #f3f4f6; padding:0.5rem 0; font-size:0.875rem;"><span>${k}</span><b style="color:#153e36;">$${cR[k].toFixed(2)}</b></div>`; document.getElementById('dash-rendimiento-cobradores').innerHTML=cRt||'<span style="color:#9ca3af;">Sin cobros de empleados hoy.</span>';
+                    if(db.config.mod.gra){ const max=Math.max(...d7)||1; let chHtml='', lblHtml=''; d7.forEach((v,i)=>{ const h=(v/max)*80; chHtml+=`<div class="chart-bar" style="height:${h}px; transition:background 0.3s;" title="$${v.toFixed(2)}"></div>`; const fd=new Date(); fd.setDate(hoy.getDate()-(6-i)); lblHtml+=`<span>${fd.getDate()}/${fd.getMonth()+1}</span>`; }); document.getElementById('grafico-barras-ui').innerHTML=chHtml; document.getElementById('grafico-fechas-ui').innerHTML=lblHtml; }
                 } else { document.getElementById('cobrador-recaudado').innerText=`$${cobH.toFixed(2)}`; if(db.config.mod.com){document.getElementById('box-comision').classList.remove('oculto'); document.getElementById('cobrador-comision').innerText=`$${(cobH*(db.config.mod.pct/100)).toFixed(2)}`;} }
-            } catch (e) { console.error("Error UI Dashboard", e); }
+            } catch (e) {}
         }
 
-        // GENERADOR DE REPORTE MENSUAL EN PDF (CON CORRECCIÓN DE PANTALLA NEGRA)
         function generarReporteMes() {
             let efe=0, bco=0, yap=0, gst=0, prestado=0;
             const mesActual = new Date().getMonth(); const yearActual = new Date().getFullYear();
@@ -678,7 +828,6 @@
             document.getElementById('rep-mes-neta').innerText = `$${(totalIn - gst).toFixed(2)}`;
             document.getElementById('rep-mes-calle').innerText = `$${prestado.toFixed(2)}`;
 
-            // SOLUCIÓN PANTALLA NEGRA ANDROID: Remover temporalmente la clase oculto
             document.getElementById('area-impresion').classList.remove('oculto');
             document.getElementById('print-reporte-mensual').classList.remove('oculto');
             
@@ -690,16 +839,14 @@
         }
 
         function busquedaUniversal(t){if(t.length>2){abrirPantalla('pantalla-deudas');renDeudas(t);}}
-        function abrirPantalla(id){document.querySelectorAll('.fullscreen-modal').forEach(e=>e.style.display='none'); document.getElementById(id).style.display='flex'; if(id==='pantalla-productos'){if(db.config.mod.stk)document.querySelectorAll('.req-stk').forEach(e=>e.classList.remove('oculto')); renProdAdmin();} if(id==='pantalla-clientes')renCli(''); if(id==='pantalla-deudas')renDeudas(''); if(id==='pantalla-solicitudes')renSol(); if(id==='pantalla-gastos')renGastos(); if(id==='pantalla-config'){document.getElementById('cfg-wa').value=db.config.wa; document.getElementById('cfg-notas').value=db.config.notas; document.getElementById('cfg-notas-chk').value=db.config.notasChk; document.getElementById('cfg-h-ini').value=db.config.hIni; document.getElementById('cfg-h-fin').value=db.config.hFin; if(db.config.mod.com) document.getElementById('cfg-comision-pct').value=db.config.mod.pct; ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','ref','aud','prv','rad','emp','bil','pro'].forEach(m=> {if(document.getElementById(`cm-${m}`)) document.getElementById(`cm-${m}`).checked=db.config.mod[m];}); if(db.config.mod.tax)document.getElementById('cfg-tax-pct').value=db.config.taxPct; renCobradores(); renContratosCfg(); renCupones(); renPremios(); } if(id==='pantalla-crear-credito'){const s=document.getElementById('cred-cliente'); s.innerHTML='<option value="">Seleccione...</option>'; db.clientes.forEach(c=>{if(!c.listaNegra)s.innerHTML+=`<option value="${c.id}">${c.nombre}</option>`}); document.getElementById('cred-fecha').valueAsDate=new Date(); } if(id==='pantalla-auditoria') { const d=document.getElementById('lista-logs-ui'); d.innerHTML=''; db.logs.forEach(l=>d.innerHTML+=`<div class="card p-4 text-xs mb-3 shadow-sm border-l-4 border-gray-400"><b>[${l.usr}]</b> ${l.act}<br><span class="text-gray-500 font-bold mt-1 block">${l.f}</span></div>`); } if(id==='pantalla-boveda')renBov(); if(id==='pantalla-proveedores')renProv(); if(id==='pantalla-canjes')renCanjesAdmin(); if(id==='pantalla-empenos')renEmpenos(); }
+        function abrirPantalla(id){document.querySelectorAll('.fullscreen-modal').forEach(e=>e.style.display='none'); document.getElementById(id).style.display='flex'; if(id==='pantalla-productos'){if(db.config.mod.stk)document.querySelectorAll('.req-stk').forEach(e=>e.classList.remove('oculto')); renProdAdmin();} if(id==='pantalla-clientes')renCli(''); if(id==='pantalla-deudas')renDeudas(''); if(id==='pantalla-solicitudes')renSol(); if(id==='pantalla-gastos')renGastos(); if(id==='pantalla-config'){document.getElementById('cfg-wa').value=db.config.wa; document.getElementById('cfg-notas').value=db.config.notas; document.getElementById('cfg-notas-chk').value=db.config.notasChk; document.getElementById('cfg-h-ini').value=db.config.hIni; document.getElementById('cfg-h-fin').value=db.config.hFin; if(db.config.mod.com) document.getElementById('cfg-comision-pct').value=db.config.mod.pct; ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','ref','aud','prv','rad','emp','bil','pro'].forEach(m=> {if(document.getElementById(`cm-${m}`)) document.getElementById(`cm-${m}`).checked=db.config.mod[m];}); if(db.config.mod.tax)document.getElementById('cfg-tax-pct').value=db.config.taxPct; renCobradores(); renContratosCfg(); renCupones(); renPremios(); } if(id==='pantalla-crear-credito'){const s=document.getElementById('cred-cliente'); s.innerHTML='<option value="">Seleccione...</option>'; db.clientes.forEach(c=>{if(!c.listaNegra)s.innerHTML+=`<option value="${c.id}">${c.nombre}</option>`}); document.getElementById('cred-fecha').valueAsDate=new Date(); } if(id==='pantalla-auditoria') { const d=document.getElementById('lista-logs-ui'); d.innerHTML=''; db.logs.forEach(l=>d.innerHTML+=`<div class="card" style="padding:1rem; font-size:0.8125rem; margin-bottom:0.75rem; border-left:4px solid #9ca3af;"><b>[${l.usr}]</b> ${l.act}<br><span style="color:#9ca3af; font-weight:bold; margin-top:0.25rem; display:block;">${l.f}</span></div>`); } if(id==='pantalla-boveda')renBov(); if(id==='pantalla-proveedores')renProv(); if(id==='pantalla-canjes')renCanjesAdmin(); if(id==='pantalla-empenos')renEmpenos(); }
         function cerrarPantallas(){document.querySelectorAll('.fullscreen-modal').forEach(e=>e.style.display='none'); actDash();}
 
-        // CORRECCIÓN GUARDADO DE BOTONES AÑADIR (Se les agregó guardarDB())
-        function addCobrador(){const n=document.getElementById('cfg-cob-nom').value, p=document.getElementById('cfg-cob-pin').value; if(n&&p){db.config.cobradores.push({id:Date.now(),nom:n,pin:p}); guardarDB(); renCobradores(); document.getElementById('cfg-cob-nom').value=''; document.getElementById('cfg-cob-pin').value='';}} function renCobradores(){const d=document.getElementById('lista-cobradores-cfg'); d.innerHTML=''; db.config.cobradores.forEach((c,i)=>{d.innerHTML+=`<div class="flex justify-between p-3 border-b border-gray-100 text-sm"><span>${c.nom} (PIN: ${c.pin})</span><i class="fas fa-trash text-red-500 cursor-pointer hover:scale-110 transition-transform" onclick="db.config.cobradores.splice(${i},1); guardarDB(); renCobradores()"></i></div>`;});}
-        function addContrato(){const n=document.getElementById('cfg-cont-cat').value, t=document.getElementById('cfg-cont-txt').value; if(n&&t){db.config.contratos=db.config.contratos.filter(x=>x.cat!==n); db.config.contratos.push({cat:n,txt:t}); guardarDB(); renContratosCfg(); document.getElementById('cfg-cont-txt').value='';}} function renContratosCfg(){const d=document.getElementById('lista-contratos-cfg'); d.innerHTML=''; db.config.contratos.forEach((c,i)=>{d.innerHTML+=`<div class="flex justify-between p-3 border-b border-gray-100 text-sm"><span>${c.cat}</span><i class="fas fa-trash text-red-500 cursor-pointer hover:scale-110 transition-transform" onclick="db.config.contratos.splice(${i},1); guardarDB(); renContratosCfg()"></i></div>`;});}
-        let tempCupImg='', tempPremImg=''; function addCupon(){const c=document.getElementById('cfg-cup-cod').value, v=parseFloat(document.getElementById('cfg-cup-val').value), t=document.getElementById('cfg-cup-tip').value; if(c&&v){db.config.cupones.push({cod:c.toUpperCase(), val:v, tip:t, img:tempCupImg}); guardarDB(); renCupones(); tempCupImg=''; document.getElementById('cfg-cup-cod').value=''; document.getElementById('cfg-cup-val').value='';}} function renCupones(){const d=document.getElementById('lista-cupones-cfg'); d.innerHTML=''; db.config.cupones.forEach((c,i)=>{d.innerHTML+=`<div class="flex items-center gap-3 p-3 text-sm border-b border-gray-50">${c.img?`<img src="${c.img}" class="img-mini shadow-sm border border-gray-200">`:''}<span>${c.cod} (-${c.val}${c.tip})</span><i class="fas fa-trash text-red-500 cursor-pointer ml-auto hover:scale-110 transition-transform" onclick="db.config.cupones.splice(${i},1); guardarDB(); renCupones()"></i></div>`;});}
-        function addPremio(){const n=document.getElementById('cfg-prem-nom').value, p=parseInt(document.getElementById('cfg-prem-pts').value), s=parseInt(document.getElementById('cfg-prem-stk').value||0); if(n&&p){db.config.premios.push({id:Date.now(),nom:n,pts:p,stock:s,img:tempPremImg}); guardarDB(); renPremios(); tempPremImg=''; document.getElementById('cfg-prem-nom').value=''; document.getElementById('cfg-prem-pts').value='';}} function renPremios(){const d=document.getElementById('lista-premios-cfg'); d.innerHTML=''; db.config.premios.forEach((p,i)=>{d.innerHTML+=`<div class="flex items-center gap-3 p-3 text-sm border-b border-gray-50">${p.img?`<img src="${p.img}" class="img-mini shadow-sm border border-gray-200">`:''}<span>${p.nom} (${p.pts} pts | Stk: ${p.stock||0})</span><i class="fas fa-trash text-red-500 cursor-pointer ml-auto hover:scale-110 transition-transform" onclick="db.config.premios.splice(${i},1); guardarDB(); renPremios()"></i></div>`;});}
+        function addCobrador(){const n=document.getElementById('cfg-cob-nom').value, p=document.getElementById('cfg-cob-pin').value; if(n&&p){db.config.cobradores.push({id:Date.now(),nom:n,pin:p}); guardarDB(); renCobradores(); document.getElementById('cfg-cob-nom').value=''; document.getElementById('cfg-cob-pin').value='';}} function renCobradores(){const d=document.getElementById('lista-cobradores-cfg'); d.innerHTML=''; db.config.cobradores.forEach((c,i)=>{d.innerHTML+=`<div style="display:flex; justify-content:space-between; padding:0.75rem; border-bottom:1px solid #f3f4f6; font-size:0.875rem;"><span>${c.nom} (PIN: ${c.pin})</span><i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="db.config.cobradores.splice(${i},1); guardarDB(); renCobradores()"></i></div>`;});}
+        function addContrato(){const n=document.getElementById('cfg-cont-cat').value, t=document.getElementById('cfg-cont-txt').value; if(n&&t){db.config.contratos=db.config.contratos.filter(x=>x.cat!==n); db.config.contratos.push({cat:n,txt:t}); guardarDB(); renContratosCfg(); document.getElementById('cfg-cont-txt').value='';}} function renContratosCfg(){const d=document.getElementById('lista-contratos-cfg'); d.innerHTML=''; db.config.contratos.forEach((c,i)=>{d.innerHTML+=`<div style="display:flex; justify-content:space-between; padding:0.75rem; border-bottom:1px solid #f3f4f6; font-size:0.875rem;"><span>${c.cat}</span><i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="db.config.contratos.splice(${i},1); guardarDB(); renContratosCfg()"></i></div>`;});}
+        function addCupon(){const c=document.getElementById('cfg-cup-cod').value, v=parseFloat(document.getElementById('cfg-cup-val').value), t=document.getElementById('cfg-cup-tip').value; if(c&&v){db.config.cupones.push({cod:c.toUpperCase(), val:v, tip:t, img:tempCupImg}); guardarDB(); renCupones(); tempCupImg=''; document.getElementById('cfg-cup-cod').value=''; document.getElementById('cfg-cup-val').value='';}} function renCupones(){const d=document.getElementById('lista-cupones-cfg'); d.innerHTML=''; db.config.cupones.forEach((c,i)=>{d.innerHTML+=`<div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem; font-size:0.875rem; border-bottom:1px solid #f9fafb;">${c.img?`<img src="${c.img}" class="img-mini" style="border:1px solid #e5e7eb;">`:''}<span>${c.cod} (-${c.val}${c.tip})</span><i class="fas fa-trash" style="color:#ef4444; cursor:pointer; margin-left:auto;" onclick="db.config.cupones.splice(${i},1); guardarDB(); renCupones()"></i></div>`;});}
+        function addPremio(){const n=document.getElementById('cfg-prem-nom').value, p=parseInt(document.getElementById('cfg-prem-pts').value), s=parseInt(document.getElementById('cfg-prem-stk').value||0); if(n&&p){db.config.premios.push({id:Date.now(),nom:n,pts:p,stock:s,img:tempPremImg}); guardarDB(); renPremios(); tempPremImg=''; document.getElementById('cfg-prem-nom').value=''; document.getElementById('cfg-prem-pts').value='';}} function renPremios(){const d=document.getElementById('lista-premios-cfg'); d.innerHTML=''; db.config.premios.forEach((p,i)=>{d.innerHTML+=`<div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem; font-size:0.875rem; border-bottom:1px solid #f9fafb;">${p.img?`<img src="${p.img}" class="img-mini" style="border:1px solid #e5e7eb;">`:''}<span>${p.nom} (${p.pts} pts | Stk: ${p.stock||0})</span><i class="fas fa-trash" style="color:#ef4444; cursor:pointer; margin-left:auto;" onclick="db.config.premios.splice(${i},1); guardarDB(); renPremios()"></i></div>`;});}
         
-        // CORRECCIÓN AL GUARDAR TODO
         function guardarConfig(){
             const na=document.getElementById('cfg-pin-admin').value; if(na)db.config.adminPin=na; 
             db.config.wa=document.getElementById('cfg-wa').value; 
@@ -709,64 +856,45 @@
             db.config.hFin=document.getElementById('cfg-h-fin').value; 
             db.config.mod.pct=parseFloat(document.getElementById('cfg-comision-pct').value||0); 
             if(db.config.mod.tax) db.config.taxPct=parseFloat(document.getElementById('cfg-tax-pct').value||7); 
-            
-            // GUARDAR ESTADO DE TODOS LOS INTERRUPTORES MANUALMENTE POR SEGURIDAD
-            ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','com','ref','aud','prv','rad','emp','bil','pro'].forEach(k=>{
-                if(document.getElementById(`cm-${k}`)) db.config.mod[k] = document.getElementById(`cm-${k}`).checked;
-            });
-            
-            guardarDB(); 
-            alert("✅ Guardado en Firebase Local y Nube Exitosamente."); 
-            location.reload();
+            ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','com','ref','aud','prv','rad','emp','bil','pro'].forEach(k=>{ if(document.getElementById(`cm-${k}`)) db.config.mod[k] = document.getElementById(`cm-${k}`).checked; });
+            guardarDB(); alert("✅ Guardado Exitosamente."); location.reload();
         }
 
-        // BÓVEDA Y PROVEEDORES
-        function entregarBoveda(){const m=parseFloat(prompt("Efectivo a entregar en bóveda:")); if(!m)return; db.boveda.pendientes.push({id:Date.now(), usr:rol, monto:m, fecha:new Date().toLocaleString()}); guardarDB(); alert("Reporte enviado al Admin.");} function renBov(){document.getElementById('bov-total').innerText=`$${(db.boveda.saldo||0).toFixed(2)}`; const d=document.getElementById('lista-boveda-ui'); d.innerHTML=''; db.boveda.pendientes.forEach((p,i)=>{d.innerHTML+=`<div class="card shadow-sm border-l-4 border-yellow-500"><b>${p.usr}</b> entregó $${p.monto}<button class="btn-main p-3 mt-3" onclick="aprobarBov(${i},${p.monto})"><i class="fas fa-check"></i> Recibir y Cuadrar Caja</button></div>`;});} function aprobarBov(i,m){db.boveda.saldo=(db.boveda.saldo||0)+m; db.boveda.pendientes.splice(i,1); addLog(`Recibió $${m} en Bóveda Central`); guardarDB(); renBov();}
+        function entregarBoveda(){const m=parseFloat(prompt("Efectivo a entregar en bóveda:")); if(!m)return; db.boveda.pendientes.push({id:Date.now(), usr:rol, monto:m, fecha:new Date().toLocaleString()}); guardarDB(); alert("Reporte enviado al Admin.");} function renBov(){document.getElementById('bov-total').innerText=`$${(db.boveda.saldo||0).toFixed(2)}`; const d=document.getElementById('lista-boveda-ui'); d.innerHTML=''; db.boveda.pendientes.forEach((p,i)=>{d.innerHTML+=`<div class="card" style="border-left:4px solid #eab308;"><b>${p.usr}</b> entregó $${p.monto}<button class="btn-main" style="padding:0.75rem; margin-top:0.75rem;" onclick="aprobarBov(${i},${p.monto})"><i class="fas fa-check"></i> Recibir y Cuadrar</button></div>`;});} function aprobarBov(i,m){db.boveda.saldo=(db.boveda.saldo||0)+m; db.boveda.pendientes.splice(i,1); addLog(`Recibió $${m} en Bóveda Central`); guardarDB(); renBov();}
         function guardarProv() { const d=document.getElementById('prv-desc').value, m=parseFloat(document.getElementById('prv-monto').value); if(d&&m){ db.proveedores.push({id:Date.now(), desc:d, monto:m, abonado:0, fecha:new Date().toISOString()}); addLog(`CxP nueva: ${d} $${m}`); guardarDB(); renProv(); document.getElementById('prv-desc').value=''; document.getElementById('prv-monto').value=''; } } 
         let idProv=null; function abrirAbonoProv(i) { idProv=i; document.getElementById('modal-abonar-prov').style.display='flex'; }
-        function procesarAbonoProv() { const m=parseFloat(document.getElementById('abc-prov-monto').value); if(!m)return; const p=db.proveedores[idProv]; p.abonado=(p.abonado||0)+m; p.monto-=m; if(p.monto<=0){db.proveedores.splice(idProv,1);} addLog(`Abonó $${m} a deuda de Proveedor: ${p.desc}`); guardarDB(); document.getElementById('modal-abonar-prov').style.display='none'; renProv(); }
-        function renProv(){const d=document.getElementById('lista-prov-ui'); d.innerHTML=''; db.proveedores.forEach((p,i)=>{d.innerHTML+=`<div class="card shadow-md border-l-4 border-orange-500"><b class="text-base">${p.desc}</b><br><div class="mt-2 text-sm bg-gray-50 p-2 rounded-lg border border-gray-200">Debe: <b class="text-orange-600 text-lg">$${p.monto}</b> | Pagado: $${p.abonado||0}</div><button class="btn-outline p-3 mt-3 text-sm w-full" onclick="abrirAbonoProv(${i})"><i class="fas fa-hand-holding-usd"></i> Abonar a Deuda</button></div>`;});}
-        function abrirRadarGlobal() { let cs=[]; db.clientes.forEach(c=>{if(c.lat&&c.lng){let mo=false;c.creditos.forEach(cr=>cr.cuotas.forEach(cu=>{if(new Date(cu.vence)<new Date()&&cu.abonado<cu.val)mo=true;})); cs.push(`markers=color:${mo?'red':'green'}%7Clabel:${c.nombre.charAt(0)}%7C${c.lat},${c.lng}`);}}); const url=`https://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=roadmap&${cs.join('&')}`; document.getElementById('mapa-radar-ui').innerHTML=`<img src="${url}" class="w-full h-full object-cover">`; abrirPantalla('pantalla-radar'); }
-        function guardarGasto(){const d=document.getElementById('gst-desc').value, m=parseFloat(document.getElementById('gst-monto').value); if(d&&m){db.gastos.push({desc:d, monto:m, fecha:new Date().toISOString()}); addLog(`Egreso/Gasto de $${m}`); guardarDB(); renGastos(); document.getElementById('gst-desc').value=''; document.getElementById('gst-monto').value='';}} function renGastos(){const d=document.getElementById('lista-gastos-ui'); d.innerHTML=''; db.gastos.forEach(g=>d.innerHTML+=`<div class="card shadow-sm border-l-4 border-red-500"><b>${g.desc}</b><span class="float-right text-red-500 font-black text-lg">-$${g.monto}</span><br><span class="text-xs text-gray-400 font-bold mt-1 block">${new Date(g.fecha).toLocaleDateString()}</span></div>`);}
+        function procesarAbonoProv() { const m=parseFloat(document.getElementById('abc-prov-monto').value); if(!m)return; const p=db.proveedores[idProv]; p.abonado=(p.abonado||0)+m; p.monto-=m; if(p.monto<=0){db.proveedores.splice(idProv,1);} addLog(`Abonó $${m} a Proveedor: ${p.desc}`); guardarDB(); document.getElementById('modal-abonar-prov').style.display='none'; renProv(); }
+        function renProv(){const d=document.getElementById('lista-prov-ui'); d.innerHTML=''; db.proveedores.forEach((p,i)=>{d.innerHTML+=`<div class="card" style="border-left:4px solid #f97316;"><b style="font-size:1rem;">${p.desc}</b><br><div style="margin-top:0.5rem; font-size:0.875rem; background:#f9fafb; padding:0.5rem; border-radius:0.5rem;">Debe: <b style="color:#ea580c; font-size:1.125rem;">$${p.monto}</b> | Pagado: $${p.abonado||0}</div><button class="btn-outline" style="padding:0.75rem; margin-top:0.75rem; font-size:0.875rem; width:100%;" onclick="abrirAbonoProv(${i})"><i class="fas fa-hand-holding-usd"></i> Abonar a Deuda</button></div>`;});}
+        function abrirRadarGlobal() { let cs=[]; db.clientes.forEach(c=>{if(c.lat&&c.lng){let mo=false;c.creditos.forEach(cr=>cr.cuotas.forEach(cu=>{if(new Date(cu.vence)<new Date()&&cu.abonado<cu.val)mo=true;})); cs.push(`markers=color:${mo?'red':'green'}%7Clabel:${c.nombre.charAt(0)}%7C${c.lat},${c.lng}`);}}); const url=`https://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=roadmap&${cs.join('&')}`; document.getElementById('mapa-radar-ui').innerHTML=`<img src="${url}" style="width:100%; height:100%; object-fit:cover;">`; abrirPantalla('pantalla-radar'); }
+        function guardarGasto(){const d=document.getElementById('gst-desc').value, m=parseFloat(document.getElementById('gst-monto').value); if(d&&m){db.gastos.push({desc:d, monto:m, fecha:new Date().toISOString()}); addLog(`Egreso/Gasto de $${m}`); guardarDB(); renGastos(); document.getElementById('gst-desc').value=''; document.getElementById('gst-monto').value='';}} function renGastos(){const d=document.getElementById('lista-gastos-ui'); d.innerHTML=''; db.gastos.forEach(g=>d.innerHTML+=`<div class="card" style="border-left:4px solid #ef4444;"><b>${g.desc}</b><span style="float:right; color:#ef4444; font-weight:900; font-size:1.125rem;">-$${g.monto}</span><br><span style="font-size:0.75rem; color:#9ca3af; font-weight:bold; margin-top:0.25rem; display:block;">${new Date(g.fecha).toLocaleDateString()}</span></div>`);}
         
-        // IMPRESIONES ARREGLADAS (QUITA LA CLASE OCULTO ANTES DE IMPRIMIR)
         function imprimirCierreCaja(){
             let cobH=0; const hoy=new Date().toLocaleDateString(); db.clientes.forEach(c=>c.historial.forEach(h=>{if(h.usr===rol && new Date(h.fecha).toLocaleDateString()===hoy)cobH+=h.monto;})); const com=db.config.mod.com?cobH*(db.config.mod.pct/100):0; const ent=cobH-com; document.getElementById('cierre-fec').innerText=hoy; document.getElementById('cierre-usr').innerText=rol; document.getElementById('cierre-tot').innerText=`$${cobH.toFixed(2)}`; document.getElementById('cierre-com').innerText=`$${com.toFixed(2)}`; document.getElementById('cierre-entregar').innerText=`$${ent.toFixed(2)}`; 
-            
-            document.getElementById('area-impresion').classList.remove('oculto');
-            document.getElementById('print-cierre').classList.remove('oculto');
-            setTimeout(() => {
-                window.print(); 
-                document.getElementById('area-impresion').classList.add('oculto');
-                document.getElementById('print-cierre').classList.add('oculto');
-                addLog(`Imprimió cierre de caja (${rol})`);
-            }, 500);
+            document.getElementById('area-impresion').classList.remove('oculto'); document.getElementById('print-cierre').classList.remove('oculto');
+            setTimeout(() => { window.print(); document.getElementById('area-impresion').classList.add('oculto'); document.getElementById('print-cierre').classList.add('oculto'); addLog(`Imprimió cierre de caja`); }, 500);
         }
 
-        let vPI=null; function verificarPago(i){vPI=i; const p=db.pagosPendientes[i], c=db.clientes.find(x=>x.id===p.cId); document.getElementById('lista-verificacion-ui').innerHTML=`<div class="card shadow-lg border-2 border-blue-200"><h3 class="text-brandDark font-black mb-3 text-lg"><i class="fas fa-university"></i> Revisión de Pago</h3><p class="text-sm bg-blue-50 p-2 rounded text-blue-800 font-bold mb-3">El cliente <b>${c.nombre}</b> reportó abono a Cuota ${p.cNum}</p><a href="${p.foto}" target="_blank"><img src="${p.foto}" class="w-full h-48 object-contain bg-gray-100 mb-4 rounded-xl border border-gray-200 shadow-inner"></a><label class="text-xs font-bold block mb-1">Confirme monto recibido en banco ($):</label><div class="input-group"><input type="number" id="verif-monto" value="${p.monto}" class="text-xl font-bold"></div><div class="input-group admin-only"><input type="number" id="verif-pronto" placeholder="Descuento Pronto Pago ($) (Opcional)"></div><button class="btn-main p-4 text-base" onclick="aprobarPagoReportado()"><i class="fas fa-check-circle"></i> Aprobar Transferencia</button><button class="btn-danger w-full mt-3 p-4" onclick="rechazarPagoReportado()"><i class="fas fa-trash"></i> Rechazar y Eliminar Reporte</button></div>`; abrirPantalla('pantalla-verificar-pagos');}
-        function aprobarPagoReportado(){const p=db.pagosPendientes[vPI], m=parseFloat(document.getElementById('verif-monto').value), pp=parseFloat(document.getElementById('verif-pronto').value||0), c=db.clientes.find(x=>x.id===p.cId), cr=c.creditos[p.crIdx], cu=cr.cuotas[p.cuIdx]; cu.abonado+=(m+pp); cr.saldo-=(m+pp); if(cr.saldo<0)cr.saldo=0; c.historial.push({cuota:cu.num, monto:m, desc:pp, fecha:new Date().toLocaleString(), usr:'Web', metodo:'Banco'}); if(db.config.mod.pts && cr.saldo===0) c.puntos=(c.puntos||0)+100; db.pagosPendientes.splice(vPI,1); addLog(`Validó pago web de ${c.nombre} por $${m}`); guardarDB(); cerrarPantallas(); alert("✅ Transferencia aprobada y aplicada a la deuda del cliente.");} function rechazarPagoReportado(){db.pagosPendientes.splice(vPI,1); guardarDB(); cerrarPantallas();}
+        let vPI=null; function verificarPago(i){vPI=i; const p=db.pagosPendientes[i], c=db.clientes.find(x=>x.id===p.cId); document.getElementById('lista-verificacion-ui').innerHTML=`<div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border:2px solid #bfdbfe;"><h3 style="color:#153e36; font-weight:900; margin-bottom:0.75rem; font-size:1.125rem;"><i class="fas fa-university"></i> Revisión de Pago</h3><p style="font-size:0.875rem; background:#eff6ff; padding:0.5rem; border-radius:0.25rem; color:#1e40af; font-weight:bold; margin-bottom:0.75rem;">El cliente <b>${c.nombre}</b> reportó abono a Cuota ${p.cNum}</p><a href="${p.foto}" target="_blank"><img src="${p.foto}" style="width:100%; max-height:12rem; object-fit:contain; background:#f3f4f6; margin-bottom:1rem; border-radius:0.75rem; border:1px solid #e5e7eb;"></a><label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.25rem;">Confirme monto en banco ($):</label><div class="input-group"><input type="number" id="verif-monto" value="${p.monto}" style="font-size:1.25rem; font-weight:bold;"></div><div class="input-group admin-only"><input type="number" id="verif-pronto" placeholder="Descuento Pronto Pago ($)"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="aprobarPagoReportado()"><i class="fas fa-check-circle"></i> Aprobar Transferencia</button><button class="btn-danger" style="width:100%; margin-top:0.75rem; padding:1rem;" onclick="rechazarPagoReportado()"><i class="fas fa-trash"></i> Rechazar y Eliminar</button></div>`; abrirPantalla('pantalla-verificar-pagos');}
+        function aprobarPagoReportado(){const p=db.pagosPendientes[vPI], m=parseFloat(document.getElementById('verif-monto').value), pp=parseFloat(document.getElementById('verif-pronto').value||0), c=db.clientes.find(x=>x.id===p.cId), cr=c.creditos[p.crIdx], cu=cr.cuotas[p.cuIdx]; cu.abonado+=(m+pp); cr.saldo-=(m+pp); if(cr.saldo<0)cr.saldo=0; c.historial.push({cuota:cu.num, monto:m, desc:pp, fecha:new Date().toLocaleString(), usr:'Web', metodo:'Banco'}); if(db.config.mod.pts && cr.saldo===0) c.puntos=(c.puntos||0)+100; db.pagosPendientes.splice(vPI,1); addLog(`Validó pago web de ${c.nombre} por $${m}`); guardarDB(); cerrarPantallas(); alert("✅ Transferencia aprobada.");} function rechazarPagoReportado(){db.pagosPendientes.splice(vPI,1); guardarDB(); cerrarPantallas();}
 
-        // CANJES Y EMPEÑOS ADMIN
-        function renCanjesAdmin() { const d=document.getElementById('lista-canjes-ui'); d.innerHTML=''; db.solicitudesPremios.forEach((p,i)=>{ const c=db.clientes.find(x=>x.id===p.cId); d.innerHTML+=`<div class="card shadow-md border-l-4 border-yellow-500"><b class="text-lg">${c.nombre}</b><br><span class="text-sm">Quiere canjear: <b class="text-yellow-600">${p.premio}</b></span><br><span class="text-xs text-gray-400 font-bold block mt-1">${p.fecha}</span><button class="btn-main p-3 mt-3 w-full !bg-yellow-500 text-gray-900 shadow-sm" onclick="aprobarCanje(${i})"><i class="fas fa-check"></i> Marcar como Entregado</button></div>`; }); } function aprobarCanje(i) { db.solicitudesPremios.splice(i,1); addLog("Marcó un premio como entregado"); guardarDB(); renCanjesAdmin(); alert("✅ Premio descontado del inventario y marcado como entregado."); }
-        function copiarLinkEmpeno() { navigator.clipboard.writeText(window.location.href.split('?')[0]+"?vista=empeno"); alert("✅ Link Copiado al portapapeles. Envíeselo a sus clientes por WhatsApp."); }
-        function renEmpenos() { const d = document.getElementById('lista-empenos-ui'); d.innerHTML=''; db.empenos.forEach((e,i)=>{ if(e.estado==='pendiente') { d.innerHTML+=`<div class="card shadow-lg border-l-4 border-yellow-500 p-5"><h3 class="text-lg font-black mb-1">${e.nom}</h3><p class="text-sm font-bold text-gray-500"><i class="fab fa-whatsapp text-green-500"></i> ${e.tel}</p><div class="my-3 bg-gray-50 p-3 rounded-lg border border-gray-200">Artículo en garantía:<br><b class="text-base text-gray-800">${e.desc}</b><br><br>Préstamo solicitado:<br><b class="text-xl text-yellow-600 font-black">$${e.monto}</b></div><a href="${e.foto}" target="_blank"><img src="${e.foto}" class="w-full h-40 object-cover rounded-xl mt-2 border border-gray-300 shadow-sm"></a><button class="btn-main mt-4 p-4 text-base !bg-yellow-500 text-gray-900 shadow-md" onclick="db.empenos[${i}].estado='visto'; guardarDB(); renEmpenos();"><i class="fas fa-check-double"></i> Archivar Solicitud</button></div>`; } }); }
+        function renCanjesAdmin() { const d=document.getElementById('lista-canjes-ui'); d.innerHTML=''; db.solicitudesPremios.forEach((p,i)=>{ const c=db.clientes.find(x=>x.id===p.cId); d.innerHTML+=`<div class="card" style="border-left:4px solid #eab308;"><b style="font-size:1.125rem;">${c.nombre}</b><br><span style="font-size:0.875rem;">Quiere canjear: <b style="color:#ca8a04;">${p.premio}</b></span><br><span style="font-size:0.75rem; color:#9ca3af; font-weight:bold; display:block; margin-top:0.25rem;">${p.fecha}</span><div style="margin-top:0.75rem;"><button class="btn-main" style="padding:0.75rem; background:#eab308; color:#111827;" onclick="aprobarCanje(${i})"><i class="fas fa-check"></i> Marcar como Entregado</button></div></div>`; }); } function aprobarCanje(i) { db.solicitudesPremios.splice(i,1); addLog("Entregó un premio"); guardarDB(); renCanjesAdmin(); alert("✅ Premio descontado y entregado."); }
+        function copiarLinkEmpeno() { navigator.clipboard.writeText(window.location.href.split('?')[0]+"?vista=empeno"); alert("✅ Link Copiado. Envíeselo por WhatsApp."); }
+        function renEmpenos() { const d = document.getElementById('lista-empenos-ui'); d.innerHTML=''; db.empenos.forEach((e,i)=>{ if(e.estado==='pendiente') { d.innerHTML+=`<div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border-left:4px solid #eab308; padding:1.25rem;"><h3 style="font-size:1.125rem; font-weight:900; margin-bottom:0.25rem;">${e.nom}</h3><p style="font-size:0.875rem; font-weight:bold; color:#6b7280;"><i class="fab fa-whatsapp" style="color:#22c55e;"></i> ${e.tel}</p><div style="margin:0.75rem 0; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">Artículo:<br><b style="font-size:1rem; color:#1f2937;">${e.desc}</b><br><br>Pide:<br><b style="font-size:1.25rem; color:#ca8a04; font-weight:900;">$${e.monto}</b></div><a href="${e.foto}" target="_blank"><img src="${e.foto}" style="width:100%; height:10rem; object-fit:cover; border-radius:0.75rem; margin-top:0.5rem; border:1px solid #d1d5db;"></a><button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem; background:#eab308; color:#111827;" onclick="db.empenos[${i}].estado='visto'; guardarDB(); renEmpenos();"><i class="fas fa-check-double"></i> Archivar</button></div>`; } }); }
 
-        // SIMULADOR
-        function simularCuota(){const m=parseFloat(document.getElementById('sim-monto').value), i=parseFloat(document.getElementById('sim-int').value||0), c=parseInt(document.getElementById('sim-cuotas').value), f=document.getElementById('sim-frec').value, tb=document.getElementById('sim-tabla-cuotas'); tb.innerHTML=''; if(m&&c){let tot=m+(m*(i/100)); if(db.config.mod.tax)tot+=(tot*(db.config.taxPct/100)); const val=tot/c; document.getElementById('sim-res-cuota').innerText=`$${val.toFixed(2)}`; let fh=new Date(); for(let x=1;x<=c;x++){if(f==='Diario')fh.setDate(fh.getDate()+1); else if(f==='Semanal')fh.setDate(fh.getDate()+7); else if(f==='Quincenal')fh.setDate(fh.getDate()+15); else fh.setMonth(fh.getMonth()+1); tb.innerHTML+=`<div class="flex justify-between border-b border-gray-200 p-3 text-xs hover:bg-gray-100 transition-colors"><span>Cuota ${x}</span><span class="font-bold text-gray-500">${fh.toLocaleDateString()}</span><b class="text-brand">$${val.toFixed(2)}</b></div>`;}}}
+        function simularCuota(){const m=parseFloat(document.getElementById('sim-monto').value), i=parseFloat(document.getElementById('sim-int').value||0), c=parseInt(document.getElementById('sim-cuotas').value), f=document.getElementById('sim-frec').value, tb=document.getElementById('sim-tabla-cuotas'); tb.innerHTML=''; if(m&&c){let tot=m+(m*(i/100)); if(db.config.mod.tax)tot+=(tot*(db.config.taxPct/100)); const val=tot/c; document.getElementById('sim-res-cuota').innerText=`$${val.toFixed(2)}`; let fh=new Date(); for(let x=1;x<=c;x++){if(f==='Diario')fh.setDate(fh.getDate()+1); else if(f==='Semanal')fh.setDate(fh.getDate()+7); else if(f==='Quincenal')fh.setDate(fh.getDate()+15); else fh.setMonth(fh.getMonth()+1); tb.innerHTML+=`<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:0.75rem; font-size:0.75rem;"><span>Cuota ${x}</span><span style="font-weight:bold; color:#6b7280;">${fh.toLocaleDateString()}</span><b style="color:#50a38d;">$${val.toFixed(2)}</b></div>`;}}}
         
-        let tf=[]; function procesarFotosProd(e){tf=[]; document.getElementById('prod-fotos-preview').innerHTML=''; Array.from(e.target.files).slice(0,3).forEach(f=>{pFoto(f, b64=>{tf.push(b64); document.getElementById('prod-fotos-preview').innerHTML+=`<img src="${b64}" class="w-20 h-20 object-cover rounded-xl shadow-md border border-gray-200">`;});});} function agregarFilaPlazo(){const id=Date.now(); document.getElementById('lista-plazos-inputs').innerHTML+=`<div class="input-group" id="plz-${id}" style="gap:5px; border:none; flex-wrap:wrap;"><input type="number" placeholder="Plazo" class="inp-plz" style="border:1px solid #ddd; width:48%;"><select class="inp-frec" style="border:1px solid #ddd; width:48%;"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select><input type="number" placeholder="Precio ($)" class="inp-pre" style="border:1px solid #ddd; width:75%;"><button class="btn-danger" style="width:20%;" onclick="document.getElementById('plz-${id}').remove()"><i class="fas fa-trash"></i></button></div>`;}
-        function guardarProducto(){const n=document.getElementById('prod-nom').value; const cat=document.getElementById('prod-cat').value; const stk=parseInt(document.getElementById('prod-stock').value||0); if(!n) return alert("❌ Escriba el nombre del producto."); let o=[]; document.querySelectorAll('#lista-plazos-inputs .input-group').forEach(r=>{const p=r.querySelector('.inp-plz').value; const f=r.querySelector('.inp-frec').value; const pr=parseFloat(r.querySelector('.inp-pre').value); if(p && pr) o.push({plazo:p,frec:f,precio:pr});}); if(o.length === 0) return alert("❌ Añada al menos un Plan de Pago (Plazo y Precio)."); db.productos.push({id:Date.now(),nom:n,cat:cat,stock:stk,fotos:tf,opciones:o}); addLog(`Añadió producto ${n} al catálogo`); guardarDB(); renderProdAdmin(); document.getElementById('prod-nom').value=''; document.getElementById('lista-plazos-inputs').innerHTML=''; document.getElementById('prod-fotos-preview').innerHTML=''; tf=[]; alert("✅ Producto añadido al catálogo exitosamente.");} 
-        function renderProdAdmin(){const d=document.getElementById('lista-productos-admin'); d.innerHTML=''; db.productos.forEach((p,i)=>{let img=p.fotos.length>0?`<img src="${p.fotos[0]}" class="w-16 h-16 object-cover rounded-xl shadow-md border border-gray-100 mr-4">`:''; d.innerHTML+=`<div class="card flex items-center hover:shadow-lg transition-shadow border border-gray-100 p-3">${img}<div class="flex-1"><b class="text-sm text-brandDark">${p.nom}</b><br><span class="text-xs text-purple-600 font-black tracking-wide">${p.cat} ${db.config.mod.stk?`| STOCK: ${p.stock}`:''}</span></div><button class="btn-danger px-4 py-3 shadow-sm hover:scale-105" onclick="if(confirm('¿Eliminar producto?')){db.productos.splice(${i},1); guardarDB(); renderProdAdmin();}"><i class="fas fa-trash"></i></button></div>`;});}
+        let tf=[]; function procesarFotosProd(e){tf=[]; document.getElementById('prod-fotos-preview').innerHTML=''; Array.from(e.target.files).slice(0,3).forEach(f=>{pFoto(f, b64=>{tf.push(b64); document.getElementById('prod-fotos-preview').innerHTML+=`<img src="${b64}" style="width:5rem; height:5rem; object-fit:cover; border-radius:0.75rem; border:1px solid #e5e7eb;">`;});});} function agregarFilaPlazo(){const id=Date.now(); document.getElementById('lista-plazos-inputs').innerHTML+=`<div class="input-group" id="plz-${id}" style="gap:0.25rem; border:none; flex-wrap:wrap;"><input type="number" placeholder="Plazo" class="inp-plz" style="border:1px solid #ddd; width:48%;"><select class="inp-frec" style="border:1px solid #ddd; width:48%;"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select><input type="number" placeholder="Precio ($)" class="inp-pre" style="border:1px solid #ddd; width:75%;"><button class="btn-danger" style="width:20%;" onclick="document.getElementById('plz-${id}').remove()"><i class="fas fa-trash"></i></button></div>`;}
+        function guardarProducto(){const n=document.getElementById('prod-nom').value; const cat=document.getElementById('prod-cat').value; const stk=parseInt(document.getElementById('prod-stock').value||0); if(!n) return alert("❌ Escriba el nombre."); let o=[]; document.querySelectorAll('#lista-plazos-inputs .input-group').forEach(r=>{const p=r.querySelector('.inp-plz').value; const f=r.querySelector('.inp-frec').value; const pr=parseFloat(r.querySelector('.inp-pre').value); if(p && pr) o.push({plazo:p,frec:f,precio:pr});}); if(o.length === 0) return alert("❌ Añada al menos un Plan (Plazo y Precio)."); db.productos.push({id:Date.now(),nom:n,cat:cat,stock:stk,fotos:tf,opciones:o}); addLog(`Añadió producto ${n}`); guardarDB(); renderProdAdmin(); document.getElementById('prod-nom').value=''; document.getElementById('lista-plazos-inputs').innerHTML=''; document.getElementById('prod-fotos-preview').innerHTML=''; tf=[]; alert("✅ Publicado.");} 
+        function renderProdAdmin(){const d=document.getElementById('lista-productos-admin'); d.innerHTML=''; db.productos.forEach((p,i)=>{let img=p.fotos.length>0?`<img src="${p.fotos[0]}" style="width:4rem; height:4rem; object-fit:cover; border-radius:0.75rem; border:1px solid #f3f4f6; margin-right:1rem;">`:''; d.innerHTML+=`<div class="card" style="display:flex; align-items:center;">${img}<div style="flex:1;"><b style="font-size:0.875rem; color:#153e36;">${p.nom}</b><br><span style="font-size:0.75rem; color:#9333ea; font-weight:900;">${p.cat} ${db.config.mod.stk?`| STOCK: ${p.stock}`:''}</span></div><button class="btn-danger" style="padding:0.75rem 1rem;" onclick="if(confirm('¿Eliminar producto?')){db.productos.splice(${i},1); guardarDB(); renderProdAdmin();}"><i class="fas fa-trash"></i></button></div>`;});}
 
-        // GENERACIÓN DE CRÉDITOS Y CÁLCULOS
         function calcPrevC(){const m=parseFloat(document.getElementById('cred-monto').value), c=parseInt(document.getElementById('cred-cuotas').value); if(m&&c){let mt=m; if(db.config.mod.tax)mt+=(mt*(db.config.taxPct/100)); document.getElementById('cred-prev-res').innerText=`$${(mt/c).toFixed(2)}`;}}
-        function generarCredito(){const cid=document.getElementById('cred-cliente').value, mo=parseFloat(document.getElementById('cred-monto').value), nc=parseInt(document.getElementById('cred-cuotas').value), f=document.getElementById('cred-frec').value, mm=parseFloat(document.getElementById('cred-mora-monto').value||0), mf=parseInt(document.getElementById('cred-mora-frec').value); if(!cid||!mo||!nc)return alert("❌ Faltan datos básicos para el crédito."); const c=db.clientes.find(x=>x.id===cid), lim=parseFloat(c.limite||1000); let act=0; c.creditos.forEach(cr=>act+=cr.saldo); const sc=calcScore(c); if((act+mo>lim||sc<=1)&&!document.getElementById('cred-ignorar-lim').checked) return alert("❌ BLOQUEADO: El cliente superó su Límite de Crédito o está en Lista Negra. Para forzar la aprobación, encienda el interruptor 'Ignorar Límite'."); let m=mo; if(db.config.mod.tax)m+=(m*(db.config.taxPct/100)); const vcuota=m/nc; let cu=[]; const fd=new Date(document.getElementById('cred-fecha').value); for(let i=1;i<=nc;i++){let v=new Date(fd); if(f==='Diario')v.setDate(v.getDate()+i); else if(f==='Semanal')v.setDate(v.getDate()+(7*i)); else if(f==='Quincenal')v.setDate(v.getDate()+(15*i)); else v.setMonth(v.getMonth()+i); cu.push({num:i, val:vcuota, abonado:0, vence:v.toISOString().split('T')[0]});} c.creditos.push({id:Date.now(), producto:document.getElementById('cred-prod').value, imei:document.getElementById('cred-imei').value, monto:m, saldo:m, frec:f, moraMonto:mm, moraFrec:mf, cuotas:cu, fecha:new Date().toISOString()}); addLog(`Creó nuevo crédito manual para ${c.nombre} ($${m})`); guardarDB(); cerrarPantallas(); alert("✅ Crédito Activado en la cuenta del cliente.");}
+        function generarCredito(){const cid=document.getElementById('cred-cliente').value, mo=parseFloat(document.getElementById('cred-monto').value), nc=parseInt(document.getElementById('cred-cuotas').value), f=document.getElementById('cred-frec').value, mm=parseFloat(document.getElementById('cred-mora-monto').value||0), mf=parseInt(document.getElementById('cred-mora-frec').value); if(!cid||!mo||!nc)return alert("❌ Faltan datos básicos."); const c=db.clientes.find(x=>x.id===cid), lim=parseFloat(c.limite||1000); let act=0; c.creditos.forEach(cr=>act+=cr.saldo); const sc=calcScore(c); if((act+mo>lim||sc<=1)&&!document.getElementById('cred-ignorar-lim').checked) return alert("❌ BLOQUEADO: Superó Límite o está en Buró. Active 'Ignorar Límite' para forzar."); let m=mo; if(db.config.mod.tax)m+=(m*(db.config.taxPct/100)); const vcuota=m/nc; let cu=[]; const fd=new Date(document.getElementById('cred-fecha').value); for(let i=1;i<=nc;i++){let v=new Date(fd); if(f==='Diario')v.setDate(v.getDate()+i); else if(f==='Semanal')v.setDate(v.getDate()+(7*i)); else if(f==='Quincenal')v.setDate(v.getDate()+(15*i)); else v.setMonth(v.getMonth()+i); cu.push({num:i, val:vcuota, abonado:0, vence:v.toISOString().split('T')[0]});} c.creditos.push({id:Date.now(), producto:document.getElementById('cred-prod').value, imei:document.getElementById('cred-imei').value, monto:m, saldo:m, frec:f, moraMonto:mm, moraFrec:mf, cuotas:cu, fecha:new Date().toISOString()}); addLog(`Crédito manual para ${c.nombre}`); guardarDB(); cerrarPantallas(); alert("✅ Crédito Activado.");}
 
         let adL={lat:'',lng:''}; function capturarGpsAdmin(){if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>{adL.lat=p.coords.latitude; adL.lng=p.coords.longitude; document.getElementById('mapa-admin-preview').style.display='block'; document.getElementById('mapa-admin-preview').innerHTML=`<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=lat,lng&z=15&output=embed4${adL.lat},${adL.lng}&hl=es&z=17&output=embed"></iframe>`;},()=>alert("GPS Denegado"));}
-        let clE=null; function guardarCliente(){const i=document.getElementById('cli-id').value, n=document.getElementById('cli-nom').value; if(!i||!n)return alert("❌ Cédula y Nombre son obligatorios"); const l=parseFloat(document.getElementById('cli-limite').value||1000); const urlM=document.getElementById('cli-url-mapa').value; const data={id:clE||Date.now().toString(), cedula:i, nombre:n, telefono:document.getElementById('cli-cel').value, direccion:document.getElementById('cli-dir').value, fiador:document.getElementById('cli-fiador').value, limite:l, nota:document.getElementById('cli-nota').value, lat:adL.lat, lng:adL.lng, urlMapa:urlM, notaColor:'verde', notaPortal:'', billetera:0, puntos:0, listaNegra:false, enLegal:false, creditos:[], gestiones:[], historial:[]}; if(clE){const idx=db.clientes.findIndex(c=>c.id===clE); data.creditos=db.clientes[idx].creditos; data.historial=db.clientes[idx].historial; data.billetera=db.clientes[idx].billetera; data.puntos=db.clientes[idx].puntos; data.listaNegra=db.clientes[idx].listaNegra; data.enLegal=db.clientes[idx].enLegal; db.clientes[idx]=data;}else db.clientes.push(data); addLog(`Registró/Editó cliente ${n}`); guardarDB(); cerrarPantallas(); alert("✅ Cliente guardado correctamente en la base de datos."); clE=null;}
+        let clE=null; function guardarCliente(){const i=document.getElementById('cli-id').value, n=document.getElementById('cli-nom').value; if(!i||!n)return alert("❌ Cédula y Nombre son obligatorios"); const l=parseFloat(document.getElementById('cli-limite').value||1000); const urlM=document.getElementById('cli-url-mapa').value; const data={id:clE||Date.now().toString(), cedula:i, nombre:n, telefono:document.getElementById('cli-cel').value, direccion:document.getElementById('cli-dir').value, fiador:document.getElementById('cli-fiador').value, limite:l, nota:document.getElementById('cli-nota').value, lat:adL.lat, lng:adL.lng, urlMapa:urlM, notaColor:'verde', notaPortal:'', billetera:0, puntos:0, listaNegra:false, enLegal:false, creditos:[], gestiones:[], historial:[]}; if(clE){const idx=db.clientes.findIndex(c=>c.id===clE); data.creditos=db.clientes[idx].creditos; data.historial=db.clientes[idx].historial; data.billetera=db.clientes[idx].billetera; data.puntos=db.clientes[idx].puntos; data.listaNegra=db.clientes[idx].listaNegra; data.enLegal=db.clientes[idx].enLegal; db.clientes[idx]=data;}else db.clientes.push(data); addLog(`Registró/Editó cliente ${n}`); guardarDB(); cerrarPantallas(); alert("✅ Cliente guardado."); clE=null;}
         function exportarCSV(){let csv="Cedula,Nombre,Tel,Deuda\n"; db.clientes.forEach(c=>{let t=0; c.creditos.forEach(cr=>t+=cr.saldo); csv+=`${c.cedula},${c.nombre},${c.telefono},${t.toFixed(2)}\n`;}); const a=document.createElement('a'); a.href=window.URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='clientes_exportados.csv'; a.click();}
         function calcScore(c) { if(c.listaNegra) return 1; if(c.enLegal) return 2; let p=0, a=0; c.creditos.forEach(cr=>cr.cuotas.forEach(cu=>{p++; if(cu.abonado>=cu.val)a++;})); if(p===0) return 3; const r=a/p; if(r>0.9) return 5; if(r>0.6) return 4; if(r>0.3) return 3; return 2; }
-        function drawStars(s) { let str=''; for(let i=0;i<5;i++) str+= i<s ? '<i class="fas fa-star text-yellow-400"></i>' : '<i class="far fa-star text-gray-300"></i>'; return str; }
+        function drawStars(s) { let str=''; for(let i=0;i<5;i++) str+= i<s ? '<i class="fas fa-star" style="color:#facc15;"></i>' : '<i class="far fa-star" style="color:#d1d5db;"></i>'; return str; }
 
     </script>
 </body>
