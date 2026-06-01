@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema FINANCIERO V26 - Definitivo</title>
+    <title>Sistema FINANCIERO V27 - Élite Empeños</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- LIBRERÍAS DE FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <!-- TAILWIND CSS (Solo para utilidades menores) -->
+    <!-- TAILWIND CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- CSS PURO Y ESTÁNDAR (Garantiza que no se rompan las ventanas en móviles) -->
     <style>
         body { background-color: #f3f4f6; color: #1f2937; overflow-x: hidden; padding-bottom: 6rem; font-family: system-ui, sans-serif; margin: 0; }
         .oculto { display: none !important; }
         
-        /* ESTA CLASE ES LA CLAVE PARA QUE NO SE VAYAN HACIA ABAJO */
         .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: #f3f4f6; z-index: 100; overflow-y: auto; flex-direction: column; }
         
         .input-group { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; display: flex; align-items: center; margin-bottom: 0.75rem; overflow: hidden; transition: all 0.3s; }
@@ -95,12 +93,12 @@
     <div id="bg-animaciones" style="position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;"></div>
     <div id="status-conexion" style="background-color: #ef4444;"><i class="fas fa-spinner fa-spin" id="icon-conn"></i> <span id="text-conn">Conectando...</span></div>
 
-    <!-- ================= 0. LOGIN Y APP ================= -->
+    <!-- ================= 0. LOGIN ================= -->
     <div id="pantalla-inicio" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #153e36; padding: 1.25rem; position: relative; z-index: 10;">
         <div class="card animate-pop" style="width: 100%; max-width: 28rem; text-align: center; position: relative;">
             <img id="logo-inicio" class="logo-sys oculto" style="height: 6rem; margin: 0 auto 1rem auto; display: block;">
-            <h2 style="color: #153e36; font-size: 1.25rem; font-weight: bold; margin-bottom: 0.25rem;">Sistema Élite V26</h2>
-            <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 1.25rem;">Corporativo + Offline First</p>
+            <h2 style="color: #153e36; font-size: 1.25rem; font-weight: bold; margin-bottom: 0.25rem;">Sistema Élite V27</h2>
+            <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 1.25rem;">Módulo Empeños RawBT</p>
             <div class="input-group"><input type="password" id="login-pin" placeholder="Ingrese su PIN asignado"></div>
             <button class="btn-main" onclick="entrarSistema()">Ingresar al Sistema</button>
             <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid #e5e7eb;">
@@ -152,7 +150,7 @@
                         <span>Bco: <b id="dash-banco" style="color: #2563eb;">$0.00</b></span>
                         <span>Yap/Nq: <b id="dash-yappy" style="color: #9333ea;">$0.00</b></span>
                     </div>
-                    <div style="font-size: 0.875rem; color: #ef4444; margin-top: 0.75rem;">Egresos (Gastos + CxP): <b id="dash-gastos">$0.00</b></div>
+                    <div style="font-size: 0.875rem; color: #ef4444; margin-top: 0.75rem;">Egresos (Gastos + Préstamos): <b id="dash-gastos">$0.00</b></div>
                     <div style="font-size: 1.125rem; font-weight: bold; color: #50a38d; border-top: 1px solid #f3f4f6; padding-top: 0.75rem; margin-top: 0.75rem;">Ganancia Neta: <span id="dash-neta">$0.00</span></div>
                     <div id="dash-rendimiento-cobradores" style="font-size: 0.75rem; margin-top: 0.75rem;"></div>
                     <div style="background: #ffedd5; height: 0.75rem; border-radius: 9999px; margin: 1rem 0; overflow: hidden;"><div id="dash-barra" style="background: #fb923c; height: 100%; width: 0%; transition: all 0.5s;"></div></div>
@@ -177,7 +175,6 @@
     </div>
 
     <!-- ================= 2. CONFIGURACIÓN ================= -->
-    <!-- ESTE PANEL AHORA TIENE LA CLASE .fullscreen-modal QUE GARANTIZA QUE CUBRA LA PANTALLA -->
     <div id="pantalla-config" class="fullscreen-modal">
         <div class="modal-header"><i class="fas fa-arrow-left" style="cursor: pointer;" onclick="cerrarPantallas()"></i> Configuración Global</div>
         <div class="animate-pop" style="padding: 1.25rem;">
@@ -218,9 +215,6 @@
                 <textarea id="cfg-cont-txt" style="width: 100%; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; margin-top: 0.75rem; font-size: 0.75rem;" rows="4" placeholder="Plantilla. Etiquetas: [NOMBRE], [CEDULA], [PRODUCTO], [IMEI], [CUOTAS], [MONTO_CUOTA]"></textarea>
             </div>
 
-            <div class="card req-cup oculto"><h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-ticket-alt"></i> Cupones de Descuento</h3><div id="lista-cupones-cfg"></div><div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;"><input type="file" id="cfg-cup-img" accept="image/*" style="width: 100%; font-size: 0.75rem;" onchange="pFoto(event, b=>tempCupImg=b)"><input type="text" id="cfg-cup-cod" placeholder="CÓDIGO" style="flex: 1; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; text-transform: uppercase;"><input type="number" id="cfg-cup-val" placeholder="Valor" style="width: 5rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><select id="cfg-cup-tip" style="padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><option value="%">%</option><option value="$">$</option></select><button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addCupon()">+</button></div></div>
-            <div class="card req-pts oculto"><h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-gift"></i> Premios e Inventario</h3><div id="lista-premios-cfg"></div><div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;"><input type="file" id="cfg-prem-img" accept="image/*" style="width: 100%; font-size: 0.75rem;" onchange="pFoto(event, b=>tempPremImg=b)"><input type="text" id="cfg-prem-nom" placeholder="Premio" style="flex: 1; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><input type="number" id="cfg-prem-pts" placeholder="Pts" style="width: 4rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><input type="number" id="cfg-prem-stk" placeholder="Stock" style="width: 4rem; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"><button class="btn-main" style="width: auto; padding: 0 1rem;" onclick="addPremio()">+</button></div></div>
-
             <div class="card">
                 <h3 style="font-size: 1rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-users-cog"></i> Usuarios y Horarios</h3>
                 <div class="input-group"><input type="password" id="cfg-pin-admin" placeholder="Cambiar PIN Admin"></div>
@@ -237,7 +231,6 @@
                 <img id="preview-logo" class="foto-preview oculto" style="margin-bottom: 1rem;">
                 <div class="input-group"><input type="text" id="cfg-wa" placeholder="WhatsApp Admin (507...)"><i class="fab fa-whatsapp"></i></div>
                 <div class="input-group"><textarea id="cfg-notas" placeholder="Notas Públicas en el Catálogo" rows="2"></textarea></div>
-                <div class="input-group"><textarea id="cfg-notas-chk" placeholder="Notas en Checkout (Antes de Firmar)" rows="2"></textarea></div>
             </div>
 
             <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
@@ -250,7 +243,7 @@
         </div>
     </div>
 
-    <!-- ================= 3. CLIENTES Y DIRECTORIO ================= -->
+    <!-- ================= 3. CLIENTES ================= -->
     <div id="pantalla-clientes" class="fullscreen-modal">
         <div class="modal-header"><i class="fas fa-arrow-left" style="cursor: pointer;" onclick="cerrarPantallas()"></i> Directorio</div>
         <div style="background: #153e36; padding: 1rem;">
@@ -273,7 +266,7 @@
             <div style="flex:1; text-align:center;"><div id="det-nombre" style="font-size:1.125rem; font-weight:bold;"></div><div id="det-score" style="font-size:0.75rem; letter-spacing:0.1em; margin-top:0.25rem; color:#6b7280;"></div></div>
             <i class="fas fa-ellipsis-v admin-only" style="color:#6b7280; padding:0.5rem; cursor:pointer;" onclick="document.getElementById('modal-opc-cliente').style.display='flex'"></i>
         </div>
-        <div class="animate-pop" style="padding:1.25rem;">
+        <div style="padding:1.25rem;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
                 <button class="btn-main" style="background:#22c55e; font-size:0.75rem; padding:0.75rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="compartirPortal()"><i class="fas fa-link"></i> Enviar Link</button>
                 <button class="btn-main req-fia oculto" style="background:#3b82f6; font-size:0.75rem; padding:0.75rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="compartirFiador()"><i class="fas fa-users"></i> Link Fiador</button>
@@ -281,7 +274,7 @@
             
             <div id="det-status-badge" style="text-align:center; margin-bottom:1rem; font-size:0.875rem; font-weight:bold;"></div>
 
-            <div class="card animate-pop" style="text-align:center; margin-bottom:1rem; padding:1.5rem; border:1px solid #f3f4f6;">
+            <div class="card" style="text-align:center; margin-bottom:1rem; padding:1.5rem; border:1px solid #f3f4f6;">
                 <div style="font-size:0.875rem; color:#6b7280; font-weight:bold; letter-spacing:0.05em; text-transform:uppercase;">Deuda Restante</div>
                 <div style="font-size:3rem; font-weight:900; color:#153e36; margin:0.75rem 0;" id="det-monto">$0.00</div>
                 <button id="btn-paz-salvo" class="btn-outline admin-only oculto" style="margin-top:0.75rem; border-color:#22c55e; color:#22c55e; width:100%;" onclick="abrirPazSalvo()"><i class="fas fa-certificate"></i> Generar Paz y Salvo</button>
@@ -309,9 +302,9 @@
     </div>
 
     <div id="modal-prorroga" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;">
-        <div class="card animate-pop" style="margin:1.25rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div class="card" style="margin:1.25rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
             <h3 style="color:#4f46e5; margin-bottom:1rem; font-weight:bold; font-size:1.25rem;"><i class="fas fa-calendar-plus"></i> Registrar Prórroga</h3>
-            <p style="font-size:0.75rem; color:#6b7280; margin-bottom:1rem; line-height:1.6; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">Mueva las fechas de pago del cliente. El cargo cobrado entrará como ganancia pura a su caja, sin descontarse de la deuda.</p>
+            <p style="font-size:0.75rem; color:#6b7280; margin-bottom:1rem; line-height:1.6; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">Mueva las fechas de pago. El cargo cobrado entrará como ganancia pura a su caja, sin descontarse de la deuda.</p>
             <div class="input-group"><input type="number" id="pro-monto" placeholder="Monto cobrado por Prórroga ($)" style="font-size:1.125rem; font-weight:bold; color:#4338ca;"></div>
             <div class="input-group req-bil oculto" style="margin-top:0.5rem;">
                 <select id="pro-metodo" style="font-weight:bold; color:#374151;">
@@ -325,7 +318,7 @@
     </div>
 
     <div id="modal-opc-cliente" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end; z-index:110;">
-        <div class="animate-pop" style="background:white; border-radius:1.5rem 1.5rem 0 0; padding:1.5rem;">
+        <div style="background:white; border-radius:1.5rem 1.5rem 0 0; padding:1.5rem;">
             <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
                 <button class="btn-outline" style="border-color:#ef4444; color:#ef4444; flex:1; font-size:0.75rem;" onclick="toggleListaNegra()"><i class="fas fa-ban"></i> Buró</button>
                 <button class="btn-outline" style="border-color:#eab308; color:#ca8a04; flex:1; font-size:0.75rem;" onclick="toggleLegal()"><i class="fas fa-gavel"></i> Legal</button>
@@ -341,10 +334,10 @@
     </div>
 
     <div id="modal-abonar-custom" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); z-index:110;">
-        <div class="card animate-pop" style="margin:auto; width:91%; margin-top:5rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid #f3f4f6;">
+        <div class="card" style="margin:auto; width:91%; margin-top:5rem; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid #f3f4f6;">
             <h3 style="color:#50a38d; margin-bottom:1rem; font-size:1.25rem; font-weight:900;">Registrar Abono</h3>
             <div style="display:flex; justify-content:space-between; margin-bottom:1.25rem; font-size:0.875rem; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;"><span id="abc-num" style="font-weight:bold; color:#4b5563;"></span><b id="abc-debe" style="color:#ef4444; font-size:1.125rem;"></b></div>
-            <label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.5rem; color:#4b5563; text-transform:uppercase; letter-spacing:0.025em;">Efectivo Recibido ($):</label>
+            <label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.5rem; color:#4b5563; text-transform:uppercase;">Efectivo Recibido ($):</label>
             <div class="input-group"><input type="number" id="abc-monto" style="font-size:1.875rem; font-weight:900; color:#153e36; padding:1rem; text-align:center;"></div>
             
             <div class="input-group req-bil oculto" style="margin-top:1rem; border-color:#bfdbfe; background:#eff6ff;">
@@ -357,51 +350,49 @@
                 <span style="font-weight:bold; color:#115e59;">Usar Saldo (<b id="abc-billetera-disp">$0</b>)</span><label class="switch"><input type="checkbox" id="abc-usar-bil"><span class="slider"></span></label>
             </div>
             
-            <label class="admin-only" style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.5rem; margin-top:1rem; text-transform:uppercase; letter-spacing:0.025em;">Descuento Pronto Pago ($):</label>
+            <label class="admin-only" style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.5rem; margin-top:1rem; text-transform:uppercase;">Descuento Pronto Pago ($):</label>
             <div class="input-group admin-only" style="border-color:#fdba74; background:#fff7ed;"><input type="number" id="abc-pronto" style="color:#c2410c; font-weight:bold; padding:1rem; text-align:center;" placeholder="Perdón de deuda"></div>
             
-            <button class="btn-main" style="padding:1rem; font-size:1.125rem; margin-top:1rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="procesarPagoManual()"><i class="fas fa-check-circle"></i> Cobrar e Imprimir</button>
+            <button class="btn-main" style="padding:1rem; font-size:1.125rem; margin-top:1rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);" onclick="procesarPagoManual()"><i class="fas fa-check-circle"></i> Guardar y Ver Recibo</button>
             <button class="btn-outline" style="margin-top:0.75rem; padding:1rem; background:#f9fafb;" onclick="document.getElementById('modal-abonar-custom').style.display='none'">Cancelar</button>
         </div>
     </div>
 
-    <div id="pantalla-crear-credito" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Nuevo Crédito</div><div class="animate-pop" style="padding:1.25rem;"><div class="input-group"><select id="cred-cliente" onchange="verificarLimite(this.value)"></select></div><div id="alerta-limite" class="alerta a-rojo oculto"></div><div class="input-group"><input type="text" id="cred-prod" placeholder="Producto/Motivo"></div><div class="input-group"><input type="text" id="cred-imei" placeholder="IMEI / Placa / Identificador"><i class="fas fa-barcode"></i></div><div class="input-group"><input type="number" id="cred-monto" placeholder="Monto Total a Cobrar ($)" oninput="calcPrevC()"></div><div class="input-group"><input type="number" id="cred-cuotas" placeholder="Cuotas Totales" oninput="calcPrevC()"></div><div class="input-group"><select id="cred-frec" onchange="calcPrevC()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="border:1px solid #ef4444; border-radius:0.75rem; padding:1rem; margin-bottom:1rem; background:#fef2f2;"><label style="font-size:0.8125rem; font-weight:bold; color:#dc2626;">Mora Automática (Opcional):</label><div style="display:flex; gap:0.5rem; margin-top:0.5rem;"><div class="input-group" style="margin:0; flex:1;"><input type="number" id="cred-mora-monto" placeholder="Monto ($)"></div><div class="input-group" style="margin:0; flex:1;"><select id="cred-mora-frec"><option value="1">Diaria</option><option value="3">Cada 3 días</option><option value="7">Semanal</option><option value="15">Quincenal</option></select></div></div></div><div class="alerta a-nar oculto" id="switch-ignorar-limite" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:0.8125rem; font-weight:bold;">Ignorar Buró / Límite</div><label class="switch"><input type="checkbox" id="cred-ignorar-lim"><span class="slider"></span></label></div><div style="background:#f0fdfa; text-align:center; padding:1rem; border-radius:0.75rem; margin-bottom:1rem;">Cuota de: <b style="font-size:1.5rem; color:#50a38d; display:block; margin-top:0.25rem;" id="cred-prev-res">$0.00</b></div><div class="input-group"><input type="date" id="cred-fecha"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="generarCredito()">Generar Crédito</button></div></div>
+    <div id="pantalla-crear-credito" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Nuevo Crédito</div><div style="padding:1.25rem;"><div class="input-group"><select id="cred-cliente" onchange="verificarLimite(this.value)"></select></div><div id="alerta-limite" class="alerta a-rojo oculto"></div><div class="input-group"><input type="text" id="cred-prod" placeholder="Producto/Motivo"></div><div class="input-group"><input type="text" id="cred-imei" placeholder="IMEI / Placa / Identificador"><i class="fas fa-barcode"></i></div><div class="input-group"><input type="number" id="cred-monto" placeholder="Monto Total a Cobrar ($)" oninput="calcPrevC()"></div><div class="input-group"><input type="number" id="cred-cuotas" placeholder="Cuotas Totales" oninput="calcPrevC()"></div><div class="input-group"><select id="cred-frec" onchange="calcPrevC()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="border:1px solid #ef4444; border-radius:0.75rem; padding:1rem; margin-bottom:1rem; background:#fef2f2;"><label style="font-size:0.8125rem; font-weight:bold; color:#dc2626;">Mora Automática (Opcional):</label><div style="display:flex; gap:0.5rem; margin-top:0.5rem;"><div class="input-group" style="margin:0; flex:1;"><input type="number" id="cred-mora-monto" placeholder="Monto ($)"></div><div class="input-group" style="margin:0; flex:1;"><select id="cred-mora-frec"><option value="1">Diaria</option><option value="3">Cada 3 días</option><option value="7">Semanal</option><option value="15">Quincenal</option></select></div></div></div><div class="alerta a-nar oculto" id="switch-ignorar-limite" style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:0.8125rem; font-weight:bold;">Ignorar Buró / Límite</div><label class="switch"><input type="checkbox" id="cred-ignorar-lim"><span class="slider"></span></label></div><div style="background:#f0fdfa; text-align:center; padding:1rem; border-radius:0.75rem; margin-bottom:1rem;">Cuota de: <b style="font-size:1.5rem; color:#50a38d; display:block; margin-top:0.25rem;" id="cred-prev-res">$0.00</b></div><div class="input-group"><input type="date" id="cred-fecha"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="generarCredito()">Generar Crédito</button></div></div>
     
-    <div id="pantalla-productos" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Admin Catálogo</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><h3 style="color:#50a38d; font-weight:bold; margin-bottom:1rem; font-size:1rem;">Publicar Producto</h3><div class="input-group"><input type="text" id="prod-nom" placeholder="Nombre"></div><div class="input-group"><select id="prod-cat"><option value="Celulares">Celulares</option><option value="Electrodomesticos">Electrodomésticos</option><option value="Motos">Motos</option><option value="Efectivo">Efectivo</option><option value="Otros">Otros</option></select></div><div class="input-group req-stk oculto"><input type="number" id="prod-stock" placeholder="Inventario Disponible"></div><b style="font-size:0.75rem;">Fotos (Máx 3):</b><input type="file" id="prod-fotos" multiple accept="image/*" style="margin:0.5rem 0; width:100%; font-size:0.75rem;" onchange="procesarFotosProd(event)"><div class="grid-fotos" style="display:flex; gap:0.5rem; overflow-x:auto;" id="prod-fotos-preview"></div><div style="display:flex; justify-content:space-between; align-items:center; margin:1rem 0;"><b style="font-size:0.875rem;">Planes de Pago</b><button class="btn-main" style="width:auto; padding:0.5rem 0.75rem;" onclick="agregarFilaPlazo()">+ Añadir Plan</button></div><div id="lista-plazos-inputs"></div><button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem;" onclick="guardarProducto()">Publicar Producto</button></div><div id="lista-productos-admin"></div></div></div>
+    <div id="pantalla-productos" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Admin Catálogo</div><div style="padding:1.25rem;"><div class="card"><h3 style="color:#50a38d; font-weight:bold; margin-bottom:1rem; font-size:1rem;">Publicar Producto</h3><div class="input-group"><input type="text" id="prod-nom" placeholder="Nombre"></div><div class="input-group"><select id="prod-cat"><option value="Celulares">Celulares</option><option value="Electrodomesticos">Electrodomésticos</option><option value="Motos">Motos</option><option value="Efectivo">Efectivo</option><option value="Otros">Otros</option></select></div><div class="input-group req-stk oculto"><input type="number" id="prod-stock" placeholder="Inventario Disponible"></div><b style="font-size:0.75rem;">Fotos (Máx 3):</b><input type="file" id="prod-fotos" multiple accept="image/*" style="margin:0.5rem 0; width:100%; font-size:0.75rem;" onchange="procesarFotosProd(event)"><div class="grid-fotos" style="display:flex; gap:0.5rem; overflow-x:auto;" id="prod-fotos-preview"></div><div style="display:flex; justify-content:space-between; align-items:center; margin:1rem 0;"><b style="font-size:0.875rem;">Planes de Pago</b><button class="btn-main" style="width:auto; padding:0.5rem 0.75rem;" onclick="agregarFilaPlazo()">+ Añadir Plan</button></div><div id="lista-plazos-inputs"></div><button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem;" onclick="guardarProducto()">Publicar Producto</button></div><div id="lista-productos-admin"></div></div></div>
 
-    <div id="pantalla-crear-cliente" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> <span id="cli-titulo-pantalla">Alta Cliente</span></div><div class="animate-pop" style="padding:1.25rem;"><div class="input-group"><input type="text" id="cli-id" placeholder="Cédula"></div><div class="input-group"><input type="text" id="cli-nom" placeholder="Nombre Completo"></div><div class="input-group"><input type="number" id="cli-limite" placeholder="Límite ($) Ej: 1000" value="1000"></div><div class="input-group"><input type="tel" id="cli-cel" placeholder="Celular"></div><div class="input-group"><textarea id="cli-dir" placeholder="Dirección Exacta" rows="2"></textarea></div><div class="input-group"><textarea id="cli-nota" placeholder="Nota Interna (Admin)" rows="2"></textarea></div><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline" style="flex:1; font-size:0.75rem;" onclick="capturarGpsAdmin()"><i class="fas fa-crosshairs"></i> GPS Auto</button><div class="input-group" style="margin:0; flex:2;"><input type="url" id="cli-url-mapa" placeholder="O pegue Link Google Maps"></div></div><div id="mapa-admin-preview" style="width:100%; height:8rem; border-radius:0.75rem; display:none; margin-bottom:1rem; background:#e5e7eb;"></div><div class="input-group"><input type="text" id="cli-fiador" placeholder="Nombre y Tel. del Fiador"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="guardarCliente()">Guardar Cliente</button></div></div>
+    <div id="pantalla-crear-cliente" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> <span id="cli-titulo-pantalla">Alta Cliente</span></div><div style="padding:1.25rem;"><div class="input-group"><input type="text" id="cli-id" placeholder="Cédula"></div><div class="input-group"><input type="text" id="cli-nom" placeholder="Nombre Completo"></div><div class="input-group"><input type="number" id="cli-limite" placeholder="Límite ($) Ej: 1000" value="1000"></div><div class="input-group"><input type="tel" id="cli-cel" placeholder="Celular"></div><div class="input-group"><textarea id="cli-dir" placeholder="Dirección Exacta" rows="2"></textarea></div><div class="input-group"><textarea id="cli-nota" placeholder="Nota Interna (Admin)" rows="2"></textarea></div><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline" style="flex:1; font-size:0.75rem;" onclick="capturarGpsAdmin()"><i class="fas fa-crosshairs"></i> GPS Auto</button><div class="input-group" style="margin:0; flex:2;"><input type="url" id="cli-url-mapa" placeholder="O pegue Link Google Maps"></div></div><div id="mapa-admin-preview" style="width:100%; height:8rem; border-radius:0.75rem; display:none; margin-bottom:1rem; background:#e5e7eb;"></div><div class="input-group"><input type="text" id="cli-fiador" placeholder="Nombre y Tel. del Fiador"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="guardarCliente()">Guardar Cliente</button></div></div>
     
-    <div id="pantalla-deudas" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cobros Rápidos</div><div style="background:#153e36; padding:1.25rem;"><div class="input-group req-qr oculto" style="margin-bottom:1rem; border-color:#22c55e; border-width:2px;"><i class="fas fa-qrcode" style="color:#22c55e; font-size:1.25rem;"></i><input type="text" id="qr-escaneado" placeholder="Escanear QR del Cliente..." onchange="procesarQrCobro(this.value)" style="font-size:1rem;"></div><input type="text" class="search-bar" style="margin-top:0; padding:1rem; font-size:1rem;" placeholder="🔍 Buscar cliente para cobrar..." onkeyup="renDeudas(this.value)"></div><div class="animate-pop" style="padding:1.25rem;" id="lista-deudas-ui"></div></div>
+    <div id="pantalla-deudas" class="fullscreen-modal"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cobros Rápidos</div><div style="background:#153e36; padding:1.25rem;"><div class="input-group req-qr oculto" style="margin-bottom:1rem; border-color:#22c55e; border-width:2px;"><i class="fas fa-qrcode" style="color:#22c55e; font-size:1.25rem;"></i><input type="text" id="qr-escaneado" placeholder="Escanear QR del Cliente..." onchange="procesarQrCobro(this.value)" style="font-size:1rem;"></div><input type="text" class="search-bar" style="margin-top:0; padding:1rem; font-size:1rem;" placeholder="🔍 Buscar cliente para cobrar..." onkeyup="renDeudas(this.value)"></div><div style="padding:1.25rem;" id="lista-deudas-ui"></div></div>
 
-    <div id="pantalla-empenos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes de Empeño</div><div class="animate-pop" style="padding:1.25rem;"><button class="btn-outline" style="border-color:#eab308; color:#ca8a04; margin-bottom:1rem; background:white; padding:1rem; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);" onclick="copiarLinkEmpeno()"><i class="fas fa-link"></i> Copiar Link Público para Empeños</button><div id="lista-empenos-ui"></div></div></div>
+    <div id="pantalla-empenos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes de Empeño</div><div style="padding:1.25rem;"><button class="btn-outline" style="border-color:#eab308; color:#ca8a04; margin-bottom:1rem; background:white; padding:1rem; box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);" onclick="copiarLinkEmpeno()"><i class="fas fa-link"></i> Copiar Link Público para Empeños</button><div id="lista-empenos-ui"></div></div></div>
     
-    <div id="pantalla-proveedores" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cuentas por Pagar</div><div class="animate-pop" style="padding:1.25rem;"><div class="card" style="background:#fff7ed; border:1px solid #fed7aa;"><h3 style="margin-bottom:1rem; font-size:1rem; font-weight:bold; color:#ea580c;"><i class="fas fa-plus-circle"></i> Nueva Deuda a Proveedor</h3><div class="input-group" style="border-color:#fdba74;"><input type="text" id="prv-desc" placeholder="Proveedor / Producto"></div><div class="input-group" style="border-color:#fdba74;"><input type="number" id="prv-monto" placeholder="Deuda Total ($)"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1rem;" onclick="guardarProv()">Añadir al Inventario de Deudas</button></div><div id="lista-prov-ui"></div></div></div>
+    <div id="pantalla-proveedores" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Cuentas por Pagar</div><div style="padding:1.25rem;"><div class="card" style="background:#fff7ed; border:1px solid #fed7aa;"><h3 style="margin-bottom:1rem; font-size:1rem; font-weight:bold; color:#ea580c;"><i class="fas fa-plus-circle"></i> Nueva Deuda a Proveedor</h3><div class="input-group" style="border-color:#fdba74;"><input type="text" id="prv-desc" placeholder="Proveedor / Producto"></div><div class="input-group" style="border-color:#fdba74;"><input type="number" id="prv-monto" placeholder="Deuda Total ($)"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1rem;" onclick="guardarProv()">Añadir al Inventario de Deudas</button></div><div id="lista-prov-ui"></div></div></div>
+    <div id="modal-abonar-prov" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#f97316; margin-bottom:1rem; font-weight:bold; font-size:1.25rem;"><i class="fas fa-hand-holding-usd"></i> Abonar a Proveedor</h3><div class="input-group"><input type="number" id="abc-prov-monto" placeholder="Monto a Pagar ($)" style="font-size:1.5rem; font-weight:bold; text-align:center; padding:1rem;"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1.125rem; margin-top:0.5rem;" onclick="procesarAbonoProv()">Registrar Pago</button><button class="btn-outline" style="margin-top:0.75rem; padding:1rem; background:#f9fafb;" onclick="document.getElementById('modal-abonar-prov').style.display='none'">Cancelar</button></div></div>
     
-    <div id="modal-abonar-prov" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#f97316; margin-bottom:1rem; font-weight:bold; font-size:1.25rem;"><i class="fas fa-hand-holding-usd"></i> Abonar a Proveedor</h3><div class="input-group"><input type="number" id="abc-prov-monto" placeholder="Monto a Pagar ($)" style="font-size:1.5rem; font-weight:bold; text-align:center; padding:1rem;"></div><button class="btn-main" style="background:#f97316; padding:1rem; font-size:1.125rem; margin-top:0.5rem;" onclick="procesarAbonoProv()">Registrar Pago</button><button class="btn-outline" style="margin-top:0.75rem; padding:1rem; background:#f9fafb;" onclick="document.getElementById('modal-abonar-prov').style.display='none'">Cancelar</button></div></div>
+    <div id="pantalla-canjes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Canjes Solicitados</div><div style="padding:1.25rem;" id="lista-canjes-ui"></div></div>
+    <div id="pantalla-boveda" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Bóveda</div><div style="padding:1.25rem;"><div class="card" style="text-align:center; background:#f59e0b; color:white;"><div style="font-size:0.875rem; margin-bottom:0.25rem;">Efectivo Asegurado</div><div style="font-size:2.5rem; font-weight:bold;" id="bov-total">$0.00</div></div><h3 style="font-size:1rem; font-weight:bold; margin-bottom:1rem; margin-top:0.5rem;">Entregas Pendientes</h3><div id="lista-boveda-ui"></div></div></div>
+    <div id="pantalla-difusion" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Campañas Masivas</div><div style="padding:1.25rem;"><div class="card"><div class="input-group"><textarea id="camp-msg" rows="4" placeholder="Escriba su mensaje aquí..."></textarea></div><div class="input-group"><select id="camp-filtro"><option value="morosos">Solo Morosos</option><option value="aldia">Clientes Al Día</option><option value="todos">Todos los Clientes</option></select></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="generarCampana()"><i class="fab fa-whatsapp"></i> Generar Lista de Envío</button></div><div id="lista-campana-ui"></div></div></div>
+    <div id="pantalla-auditoria" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Auditoría de Sistema</div><div style="padding:1.25rem;" id="lista-logs-ui"></div></div>
+    <div id="pantalla-gastos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Gastos Diarios</div><div style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="text" id="gst-desc" placeholder="Descripción (Ej: Gasolina)"></div><div class="input-group"><input type="number" id="gst-monto" placeholder="Monto ($)"></div><button class="btn-main" style="background:#ef4444; padding:1rem;" onclick="guardarGasto()">Registrar Egreso</button></div><div id="lista-gastos-ui"></div></div></div>
+    <div id="pantalla-solicitudes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes Web</div><div style="padding:1.25rem;" id="lista-solicitudes-ui"></div></div>
+    <div id="pantalla-verificar-pagos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Validar Pagos</div><div style="padding:1.25rem;" id="lista-verificacion-ui"></div></div>
     
-    <div id="pantalla-canjes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Canjes Solicitados</div><div class="animate-pop" style="padding:1.25rem;" id="lista-canjes-ui"></div></div>
-    
-    <div id="pantalla-boveda" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Bóveda</div><div class="animate-pop" style="padding:1.25rem;"><div class="card" style="text-align:center; background:#f59e0b; color:white;"><div style="font-size:0.875rem; margin-bottom:0.25rem;">Efectivo Asegurado</div><div style="font-size:2.5rem; font-weight:bold;" id="bov-total">$0.00</div></div><h3 style="font-size:1rem; font-weight:bold; margin-bottom:1rem; margin-top:0.5rem;">Entregas Pendientes</h3><div id="lista-boveda-ui"></div></div></div>
-    <div id="pantalla-difusion" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Campañas Masivas</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><textarea id="camp-msg" rows="4" placeholder="Escriba su mensaje aquí..."></textarea></div><div class="input-group"><select id="camp-filtro"><option value="morosos">Solo Morosos</option><option value="aldia">Clientes Al Día</option><option value="todos">Todos los Clientes</option></select></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="generarCampana()"><i class="fab fa-whatsapp"></i> Generar Lista de Envío</button></div><div id="lista-campana-ui"></div></div></div>
-    <div id="pantalla-auditoria" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Auditoría de Sistema</div><div class="animate-pop" style="padding:1.25rem;" id="lista-logs-ui"></div></div>
-    <div id="pantalla-gastos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Gastos Diarios</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="text" id="gst-desc" placeholder="Descripción (Ej: Gasolina)"></div><div class="input-group"><input type="number" id="gst-monto" placeholder="Monto ($)"></div><button class="btn-main" style="background:#ef4444; padding:1rem;" onclick="guardarGasto()">Registrar Egreso</button></div><div id="lista-gastos-ui"></div></div></div>
-    <div id="pantalla-solicitudes" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Solicitudes Web</div><div class="animate-pop" style="padding:1.25rem;" id="lista-solicitudes-ui"></div></div>
-    <div id="pantalla-verificar-pagos" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Validar Pagos</div><div class="animate-pop" style="padding:1.25rem;" id="lista-verificacion-ui"></div></div>
-    
-    <div id="modal-gestion" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#50a38d; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Nueva Gestión</h3><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline active" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Llamada')">Llamada</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Visita')">Visita</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'WhatsApp')">WA</button></div><div class="input-group"><select id="gest-res"><option>Promesa de pago</option><option>No contesta</option></select></div><div class="input-group"><textarea id="gest-nota" placeholder="Nota..." rows="3"></textarea></div><label style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.25rem;">📅 Fecha Promesa:</label><div class="input-group"><input type="date" id="gest-fecha-promesa"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem;" onclick="guardarGestion()">Guardar</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-gestion').style.display='none'">Cancelar</button></div></div>
-    <div id="modal-editar-deuda" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#ef4444; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Editar Saldo Actual</h3><div class="input-group"><input type="number" id="edit-deuda-saldo" style="font-size:1.25rem;"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem; background:#ef4444;" onclick="guardarEdicionDeuda()">Guardar Nuevo Saldo</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-editar-deuda').style.display='none'">Cancelar</button></div></div>
-    <div id="pantalla-calculadora" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Simulador</div><div class="animate-pop" style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="number" id="sim-monto" placeholder="Monto ($)" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-int" placeholder="% Interés" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-cuotas" placeholder="Cuotas" oninput="simularCuota()"></div><div class="input-group"><select id="sim-frec" onchange="simularCuota()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="background:#153e36; color:white; padding:1rem; border-radius:0.75rem; text-align:center; margin-top:0.5rem;"><div style="font-size:0.8125rem; opacity:0.8; margin-bottom:0.25rem;">Cuota a Pagar:</div><div style="font-size:1.875rem; font-weight:bold;" id="sim-res-cuota">$0.00</div></div></div><h3 style="font-size:0.9375rem; font-weight:bold; margin-bottom:0.5rem;">Amortización (Proyección)</h3><div class="card" style="padding:0; overflow:hidden;"><div style="background:#f3f4f6; display:flex; justify-content:space-between; padding:0.75rem; font-size:0.8125rem; font-weight:bold;"><span>N°</span><span>Fecha</span><span>Monto</span></div><div id="sim-tabla-cuotas" style="max-height:15rem; overflow-y:auto;"></div></div></div></div>
+    <div id="modal-gestion" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#50a38d; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Nueva Gestión</h3><div style="display:flex; gap:0.5rem; margin-bottom:1rem;"><button class="btn-outline active" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Llamada')">Llamada</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'Visita')">Visita</button><button class="btn-outline" style="flex:1; font-size:0.75rem; padding:0.5rem;" onclick="selGest(this, 'WhatsApp')">WA</button></div><div class="input-group"><select id="gest-res"><option>Promesa de pago</option><option>No contesta</option></select></div><div class="input-group"><textarea id="gest-nota" placeholder="Nota..." rows="3"></textarea></div><label style="font-size:0.75rem; font-weight:bold; color:#f97316; display:block; margin-bottom:0.25rem;">📅 Fecha Promesa:</label><div class="input-group"><input type="date" id="gest-fecha-promesa"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem;" onclick="guardarGestion()">Guardar</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-gestion').style.display='none'">Cancelar</button></div></div>
+    <div id="modal-editar-deuda" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#ef4444; margin-bottom:1rem; font-weight:bold; font-size:1rem;">Editar Saldo Actual</h3><div class="input-group"><input type="number" id="edit-deuda-saldo" style="font-size:1.25rem;"></div><button class="btn-main" style="padding:1rem; margin-top:0.5rem; background:#ef4444;" onclick="guardarEdicionDeuda()">Guardar Nuevo Saldo</button><button class="btn-outline" style="margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-editar-deuda').style.display='none'">Cancelar</button></div></div>
+    <div id="pantalla-calculadora" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Simulador</div><div style="padding:1.25rem;"><div class="card"><div class="input-group"><input type="number" id="sim-monto" placeholder="Monto ($)" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-int" placeholder="% Interés" oninput="simularCuota()"></div><div class="input-group"><input type="number" id="sim-cuotas" placeholder="Cuotas" oninput="simularCuota()"></div><div class="input-group"><select id="sim-frec" onchange="simularCuota()"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select></div><div style="background:#153e36; color:white; padding:1rem; border-radius:0.75rem; text-align:center; margin-top:0.5rem;"><div style="font-size:0.8125rem; opacity:0.8; margin-bottom:0.25rem;">Cuota a Pagar:</div><div style="font-size:1.875rem; font-weight:bold;" id="sim-res-cuota">$0.00</div></div></div><h3 style="font-size:0.9375rem; font-weight:bold; margin-bottom:0.5rem;">Amortización (Proyección)</h3><div class="card" style="padding:0; overflow:hidden;"><div style="background:#f3f4f6; display:flex; justify-content:space-between; padding:0.75rem; font-size:0.8125rem; font-weight:bold;"><span>N°</span><span>Fecha</span><span>Monto</span></div><div id="sim-tabla-cuotas" style="max-height:15rem; overflow-y:auto;"></div></div></div></div>
 
-    <div id="pantalla-radar" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Radar Global GPS</div><div class="animate-pop" style="padding:0; height:100%;" id="mapa-radar-ui"></div></div>
+    <div id="pantalla-radar" class="fullscreen-modal admin-only"><div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="cerrarPantallas()"></i> Radar Global GPS</div><div style="padding:0; height:100%;" id="mapa-radar-ui"></div></div>
 
-    <div id="modal-pazysalvo" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#22c55e; margin-bottom:1rem; font-weight:bold; font-size:1.125rem;">Certificado de Paz y Salvo</h3><div class="input-group"><textarea id="txt-pazysalvo" rows="8" style="font-size:0.8125rem; padding:0.75rem;"></textarea></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="imprimirPazSalvo()"><i class="fas fa-print"></i> Imprimir Certificado</button><button class="btn-danger" style="width:100%; margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-pazysalvo').style.display='none'">Cancelar</button></div></div>
+    <div id="modal-pazysalvo" class="fullscreen-modal admin-only" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;"><div class="card" style="margin:1.25rem; padding:1.5rem;"><h3 style="color:#22c55e; margin-bottom:1rem; font-weight:bold; font-size:1.125rem;">Certificado de Paz y Salvo</h3><div class="input-group"><textarea id="txt-pazysalvo" rows="8" style="font-size:0.8125rem; padding:0.75rem;"></textarea></div><button class="btn-main" style="background:#22c55e; padding:1rem;" onclick="imprimirPazSalvo()"><i class="fas fa-print"></i> Imprimir Certificado</button><button class="btn-danger" style="width:100%; margin-top:0.5rem; padding:1rem;" onclick="document.getElementById('modal-pazysalvo').style.display='none'">Cancelar</button></div></div>
 
     <div id="vista-empenos" class="oculto" style="position:relative; z-index:20; background:#f9fafb; min-height:100vh;">
         <div style="background:#111827; color:white; padding:1.5rem; text-align:center; position:sticky; top:0; z-index:40; border-radius:0 0 1.5rem 1.5rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
             <h2 style="font-size:1.5rem; font-weight:900; color:#facc15; margin-bottom:0.25rem;"><i class="fas fa-ring"></i> Área de Empeños</h2>
             <p style="font-size:0.75rem; color:#d1d5db;">Reciba dinero rápido por sus artículos de valor</p>
         </div>
-        <div class="animate-pop" style="padding:1.25rem; margin-top:0.5rem;">
+        <div style="padding:1.25rem; margin-top:0.5rem;">
             <div class="card" style="box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); border:1px solid #e5e7eb; padding:1.5rem;">
                 <h3 style="font-weight:bold; color:#153e36; margin-bottom:1rem; border-bottom:1px solid #f3f4f6; padding-bottom:0.5rem;">Complete el Formulario</h3>
                 <div class="input-group" style="background:#f9fafb;"><i class="fas fa-user"></i><input type="text" id="emp-nom" placeholder="Su Nombre Completo"></div>
@@ -428,15 +419,15 @@
             </div>
         </div>
         <div class="tabs-pills" style="padding:1rem 1.25rem 0.25rem 1.25rem; border:none; margin:0; background:#f9fafb;" id="cat-tabs-cat"></div>
-        <div id="cat-notas-box" class="alerta a-nar oculto animate-pop shadow-sm" style="margin:0.75rem 1.25rem; font-weight:bold;"></div>
-        <div id="cat-ref-box" class="alerta a-ver oculto animate-pop shadow-sm" style="margin:0.75rem 1.25rem; text-align:center; font-weight:bold;"><i class="fas fa-handshake"></i> Invitado Especial de: <span id="cat-ref-nom"></span></div>
-        <div class="req-cup oculto animate-pop" style="padding:0 1.25rem; margin-top:0.75rem;"><div class="input-group shadow-sm" style="margin-bottom:0;"><i class="fas fa-ticket-alt"></i><input type="text" id="cup-codigo" placeholder="Cupón de Descuento" style="text-transform:uppercase; font-weight:bold;"><button class="btn-main" style="width:auto; border-radius:0 0.75rem 0.75rem 0; padding:0 1.5rem;" onclick="aplicarCuponPub()">Aplicar</button></div></div>
+        <div id="cat-notas-box" class="alerta a-nar oculto shadow-sm" style="margin:0.75rem 1.25rem; font-weight:bold;"></div>
+        <div id="cat-ref-box" class="alerta a-ver oculto shadow-sm" style="margin:0.75rem 1.25rem; text-align:center; font-weight:bold;"><i class="fas fa-handshake"></i> Invitado Especial de: <span id="cat-ref-nom"></span></div>
+        <div class="req-cup oculto" style="padding:0 1.25rem; margin-top:0.75rem;"><div class="input-group shadow-sm" style="margin-bottom:0;"><i class="fas fa-ticket-alt"></i><input type="text" id="cup-codigo" placeholder="Cupón de Descuento" style="text-transform:uppercase; font-weight:bold;"><button class="btn-main" style="width:auto; border-radius:0 0.75rem 0.75rem 0; padding:0 1.5rem;" onclick="aplicarCuponPub()">Aplicar</button></div></div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1.25rem;" id="catalogo-publico-ui"></div>
     </div>
     
     <div id="pantalla-carrito" class="fullscreen-modal" style="background:#f9fafb; z-index:30;">
         <div class="modal-header" style="box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="document.getElementById('pantalla-carrito').style.display='none'"></i> Carrito de Compras</div>
-        <div class="animate-pop" style="padding:1.25rem; padding-bottom:5rem;">
+        <div style="padding:1.25rem; padding-bottom:5rem;">
             <div id="carrito-items-ui"></div>
             <div class="card" style="background:white; border:1px solid #e5e7eb; margin-top:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); padding:1.5rem;">
                 <h3 style="font-size:1.125rem; font-weight:900; margin-bottom:1.25rem; color:#153e36; border-bottom:1px solid #f3f4f6; padding-bottom:0.5rem;">Datos para el Crédito</h3>
@@ -471,7 +462,7 @@
     </div>
 
     <div id="modal-contrato" class="fullscreen-modal" style="background:rgba(0,0,0,0.9); z-index:110; padding:1rem; justify-content:center;">
-        <div class="card animate-pop" style="max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div class="card" style="max-height:90vh; overflow-y:auto; padding:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
             <h3 style="text-align:center; font-size:1.25rem; font-weight:900; margin-bottom:1.25rem; color:#153e36; text-transform:uppercase;">Contrato Legal</h3>
             <div class="input-group" style="background:#f9fafb;"><select id="sel-plantilla-cont" onchange="cambiarPlantilla()" style="font-weight:bold;"></select></div>
             <div id="ui-texto-contrato" style="font-size:0.75rem; line-height:1.8; color:#374151; margin-bottom:1.25rem; max-height:14rem; overflow-y:auto; border:1px solid #e5e7eb; padding:1.25rem; border-radius:0.75rem; background:#f9fafb; text-align:justify;"></div>
@@ -483,25 +474,25 @@
     </div>
 
     <div id="vista-portal" class="oculto" style="position:relative; z-index:20;">
-        <div class="animate-pop" style="background:#153e36; color:white; padding:2.5rem 1.25rem 2rem 1.25rem; text-align:center; border-radius:0 0 1.875rem 1.875rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+        <div style="background:#153e36; color:white; padding:2.5rem 1.25rem 2rem 1.25rem; text-align:center; border-radius:0 0 1.875rem 1.875rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
             <img id="logo-portal" class="logo-sys oculto" style="height:4rem; margin:0 auto 0.5rem auto; display:block;">
             <h2 id="port-nom" style="font-size:1.5rem; font-weight:bold;"></h2>
             <p style="font-size:0.875rem; opacity:0.8; margin-top:0.25rem;">Estado de Cuenta Oficial</p>
         </div>
         <div style="padding:1.25rem; margin-top:-1.25rem;">
-            <div id="port-nota-box" class="oculto alerta animate-pop" style="font-weight:bold; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);"></div>
-            <div class="card req-qr oculto animate-pop" style="text-align:center;"><img id="port-qr" class="qr-code"> <p style="font-size:0.75rem; color:#6b7280; margin-top:0.5rem;">Muestra este código para pagar</p></div>
-            <div class="card animate-pop" style="text-align:center;">
+            <div id="port-nota-box" class="oculto alerta" style="font-weight:bold; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);"></div>
+            <div class="card req-qr oculto" style="text-align:center;"><img id="port-qr" class="qr-code"> <p style="font-size:0.75rem; color:#6b7280; margin-top:0.5rem;">Muestra este código para pagar</p></div>
+            <div class="card" style="text-align:center;">
                 <div style="font-size:2.5rem; font-weight:bold; color:#ef4444; margin:0.5rem 0;" id="port-saldo">$0.00</div>
                 <div id="port-alerta-mora" class="alerta a-rojo oculto" style="margin-top:1rem; font-weight:bold; text-align:left;"></div>
                 <button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);" onclick="document.getElementById('modal-reportar-pago').style.display='flex'"><i class="fas fa-camera"></i> Reportar Transferencia Bancaria</button>
             </div>
-            <div id="port-referidos" class="card oculto req-ref animate-pop" style="background:#f0fdfa; border:1px solid #50a38d; text-align:center;">
+            <div id="port-referidos" class="card oculto req-ref" style="background:#f0fdfa; border:1px solid #50a38d; text-align:center;">
                 <h3 style="color:#153e36; font-weight:bold; font-size:1rem;"><i class="fas fa-gift"></i> Gana Refiriendo</h3>
                 <div style="font-size:1.5rem; font-weight:bold; color:#50a38d; margin:0.5rem 0;">Billetera: <span id="port-bil-disp">$0.00</span></div>
                 <button class="btn-main" style="font-size:0.875rem; padding:0.75rem; margin-top:0.5rem;" onclick="alertaReferidor()"><i class="fas fa-share-alt"></i> Invitar Amigo</button>
             </div>
-            <div id="port-puntos" class="card oculto req-pts animate-pop" style="background:#faf5ff; border:1px solid #d8b4fe; text-align:center;">
+            <div id="port-puntos" class="card oculto req-pts" style="background:#faf5ff; border:1px solid #d8b4fe; text-align:center;">
                 <h3 style="color:#9333ea; font-weight:bold; font-size:1rem;"><i class="fas fa-star" style="color:#facc15;"></i> Puntos Acumulados: <span id="port-pts-disp" style="font-size:1.25rem;">0</span></h3>
                 <button class="btn-outline" style="border-color:#a855f7; color:#9333ea; margin-top:0.5rem; font-size:0.8125rem; padding:0.5rem;" onclick="abrirTiendaPuntos()">Ver Tienda de Premios</button>
             </div>
@@ -511,11 +502,11 @@
     </div>
     
     <div id="vista-fiador" class="oculto" style="position:relative; z-index:20;">
-        <div class="header-bg animate-pop" style="text-align:center;">
+        <div class="header-bg" style="text-align:center;">
             <h2 style="font-size:1.25rem; font-weight:bold;">Portal del Fiador</h2>
             <p style="font-size:0.8125rem; margin-top:0.25rem;">Vigilancia en tiempo real de: <b id="fia-cli-nom" style="color:#fde047;"></b></p>
         </div>
-        <div class="animate-pop" style="padding:1.25rem; margin-top:-1.25rem;">
+        <div style="padding:1.25rem; margin-top:-1.25rem;">
             <div class="card" style="text-align:center; padding:1.5rem;">
                 <div style="font-size:0.875rem; color:#6b7280;">Deuda Restante del Cliente:</div>
                 <div style="font-size:2.25rem; font-weight:bold; color:#ef4444; margin:0.75rem 0;" id="fia-saldo">$0.00</div>
@@ -525,7 +516,7 @@
     </div>
 
     <div id="modal-reportar-pago" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end; z-index:110;">
-        <div class="animate-pop" style="background:white; border-radius:1.25rem 1.25rem 0 0; padding:1.5rem;">
+        <div style="background:white; border-radius:1.25rem 1.25rem 0 0; padding:1.5rem;">
             <h3 style="color:#50a38d; margin-bottom:1.25rem; font-weight:bold; font-size:1rem;">Reportar Transferencia</h3>
             <div class="input-group"><select id="rep-cuota-sel"></select></div>
             <div class="input-group"><input type="number" id="rep-monto" placeholder="Monto exacto transferido ($)"></div>
@@ -540,7 +531,7 @@
     </div>
     
     <div id="modal-ref-aviso" class="fullscreen-modal" style="background:rgba(0,0,0,0.8); justify-content:center; z-index:110;">
-        <div class="card animate-pop" style="margin:1.25rem; padding:1.5rem;">
+        <div class="card" style="margin:1.25rem; padding:1.5rem;">
             <h3 style="color:#ef4444; margin-bottom:1rem; font-weight:bold; font-size:1rem;"><i class="fas fa-exclamation-triangle"></i> Aviso Legal de Responsabilidad</h3>
             <p style="font-size:0.8125rem; color:#4b5563; text-align:justify; margin-bottom:1.25rem; line-height:1.6;">Al recomendar a un amigo para ganar saldo, usted se convierte automáticamente en su <b>FIADOR SOLIDARIO (Codeudor)</b>. Si la persona que usted invita incumple con sus pagos, la deuda será transferida a su cuenta personal y usted deberá asumirla. ¿Acepta esta responsabilidad?</p>
             <button class="btn-main" style="background:#22c55e; margin-bottom:0.75rem; padding:1rem; font-size:0.875rem;" onclick="aceptarYCopiarRef()">Sí, Acepto la Responsabilidad y el Link</button>
@@ -550,11 +541,11 @@
 
     <div id="pantalla-tienda-puntos" class="fullscreen-modal" style="z-index:30;">
         <div class="modal-header"><i class="fas fa-arrow-left" style="cursor:pointer;" onclick="document.getElementById('pantalla-tienda-puntos').style.display='none'"></i> Tienda de Premios</div>
-        <div class="animate-pop" style="padding:1.25rem;" id="lista-premios-ui"></div>
+        <div style="padding:1.25rem;" id="lista-premios-ui"></div>
     </div>
 
     <div id="area-impresion" class="oculto">
-        <div id="print-factura" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><img id="print-logo" class="oculto" style="max-height:4rem; margin-bottom:0.5rem; margin-left:auto; margin-right:auto;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold;">RECIBO OFICIAL</h2><div id="print-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem; line-height:1.6;"><b>Atiende:</b> <span id="print-usr"></span><br><b>Cliente:</b> <span id="print-cli"></span><br><b>Prod:</b> <span id="print-ref"></span><br><b>Cuota:</b> <span id="print-cuota"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><table style="width:100%; font-size:0.75rem;"><tr><td><b>Abono:</b></td><td style="text-align:right;"><b id="print-monto"></b></td></tr><tr><td>Desc PP/Bil:</td><td style="text-align:right;" id="print-desc"></td></tr><tr class="req-tax"><td style="padding-top:0.25rem; font-size:0.625rem;">Subtotal:</td><td style="text-align:right; padding-top:0.25rem; font-size:0.625rem;" id="print-sub"></td></tr><tr class="req-tax"><td style="font-size:0.625rem;">Impuesto:</td><td style="text-align:right; font-size:0.625rem;" id="print-tax"></td></tr><tr><td style="padding-top:0.5rem; font-size:0.875rem; font-weight:bold;">SALDO DEUDA:</td><td style="text-align:right; padding-top:0.5rem; font-size:0.875rem; font-weight:bold;" id="print-saldo"></td></tr></table><img id="print-qr" class="qr-code req-qr oculto"><div style="text-align:center; font-size:0.625rem; margin-top:1rem;">¡Gracias por su pago!<br><i>Generado por Sistema Élite</i></div></div>
+        <div id="print-factura" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><img id="print-logo" class="oculto" style="max-height:4rem; margin-bottom:0.5rem; margin-left:auto; margin-right:auto;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold;">RECIBO OFICIAL</h2><div id="print-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem; line-height:1.6;"><b>Atiende:</b> <span id="print-usr"></span><br><b>Cliente:</b> <span id="print-cli"></span><br><b>Prod:</b> <span id="print-ref"></span><br><b>Cuota:</b> <span id="print-cuota"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><table style="width:100%; font-size:0.75rem;"><tr><td><b>Abono:</b></td><td style="text-align:right;"><b id="print-monto"></b></td></tr><tr><td>Desc PP/Bil:</td><td style="text-align:right;" id="print-desc"></td></tr><tr class="req-tax"><td style="padding-top:0.25rem; font-size:0.625rem;">Subtotal:</td><td style="text-align:right; padding-top:0.25rem; font-size:0.625rem;" id="print-sub"></td></tr><tr class="req-tax"><td style="font-size:0.625rem;">Impuesto:</td><td style="text-align:right; font-size:0.625rem;" id="print-tax"></td></tr><tr><td style="padding-top:0.5rem; font-size:0.875rem; font-weight:bold;">SALDO DEUDA:</td><td style="text-align:right; padding-top:0.5rem; font-size:0.875rem; font-weight:bold;" id="print-saldo"></td></tr></table><img id="print-qr" class="qr-code req-qr oculto"><div style="text-align:center; font-size:0.625rem; margin-top:1rem;">¡Gracias por su pago!<br><i>Generado por Sistema Élite V27</i></div></div>
         
         <div id="print-cierre" class="oculto"><div style="text-align:center; margin-bottom:0.75rem;"><h2 style="margin:0; font-size:1.125rem; font-weight:bold;">CIERRE DE CAJA</h2><div id="cierre-fec" style="font-size:0.625rem;"></div></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><div style="font-size:0.75rem;"><b>Cobrador:</b> <span id="cierre-usr"></span></div><div style="border-top:1px dashed black; margin:0.5rem 0;"></div><table style="width:100%; font-size:0.75rem;"><tr><td>Total Cobrado Hoy:</td><td style="text-align:right;" id="cierre-tot"></td></tr><tr><td>Comisión Generada:</td><td style="text-align:right;" id="cierre-com"></td></tr><tr><td style="padding-top:0.75rem; font-size:0.875rem; font-weight:bold;">TOTAL A ENTREGAR:</td><td style="text-align:right; padding-top:0.75rem; font-size:0.875rem; font-weight:bold;" id="cierre-entregar"></td></tr></table><div style="text-align:center; font-size:0.625rem; margin-top:1.5rem;">_____________________<br>Firma Cobrador</div></div>
         
@@ -594,10 +585,7 @@
             <table style="width:100%; font-size:0.875rem; border-collapse:collapse; margin-bottom:2.5rem;">
                 <tr><td style="padding:0.5rem 0; border-bottom:1px solid #e5e7eb;">Total Créditos Aprobados este mes (Cuentas por Cobrar):</td><td style="text-align:right; padding:0.5rem 0; border-bottom:1px solid #e5e7eb; font-weight:bold; color:#1d4ed8;" id="rep-mes-calle"></td></tr>
             </table>
-            
-            <div style="text-align:center; margin-top:6rem; font-size:0.875rem; font-weight:bold;">
-                ___________________________________<br>Firma y Sello de Gerencia Administradora
-            </div>
+            <div style="text-align:center; margin-top:6rem; font-size:0.875rem; font-weight:bold;">___________________________________<br>Firma y Sello de Gerencia Administradora</div>
         </div>
     </div>
 
@@ -612,9 +600,9 @@
             appId: "1:408912139997:web:6d7259e5a45b4e03abed34"
         };
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref('sistema_v26_elite_pro'); 
+        const dbRef = firebase.database().ref('sistema_v27_elite_pro'); 
         
-        let db = JSON.parse(localStorage.getItem('sys_v26_backup')) || null;
+        let db = JSON.parse(localStorage.getItem('sys_v27_backup')) || null;
         let isOnline = false;
         
         let rol='Admin'; let refId=null; let empFotoB64=''; let loc={lat:'',lng:''}; let carrito=[]; let catFilter='Todos';
@@ -632,18 +620,6 @@
                 el.style.opacity = '1'; el.style.background = '#ef4444'; icon.className = 'fas fa-exclamation-triangle'; txt.innerText = 'SIN CONEXIÓN';
             }
         });
-
-        function crearIconosFlotantes() {
-            const bg = document.getElementById('bg-animaciones'); bg.innerHTML='';
-            if(!db || !db.config.mod.ani) return; 
-            const iconos = ['fa-coins', 'fa-money-bill-wave', 'fa-credit-card', 'fa-wallet', 'fa-chart-line', 'fa-piggy-bank'];
-            for(let i=0; i<15; i++){
-                let ic = document.createElement('i');
-                ic.className = `fas ${iconos[Math.floor(Math.random()*iconos.length)]} floating-icon`;
-                ic.style.left = Math.random() * 100 + 'vw'; ic.style.animationDuration = (Math.random() * 15 + 10) + 's'; ic.style.animationDelay = (Math.random() * 5) + 's'; ic.style.fontSize = (Math.random() * 25 + 15) + 'px';
-                bg.appendChild(ic);
-            }
-        }
 
         function asegurarDB(data) {
             let def = {
@@ -678,13 +654,13 @@
         dbRef.on('value', (s)=>{
             if(s.val()) {
                 db = asegurarDB(s.val());
-                localStorage.setItem('sys_v26_backup', JSON.stringify(db)); 
+                localStorage.setItem('sys_v27_backup', JSON.stringify(db)); 
                 uiMods(); refrescarVistasActivas();
             }
         });
 
         function guardarDB(){ 
-            localStorage.setItem('sys_v26_backup', JSON.stringify(db));
+            localStorage.setItem('sys_v27_backup', JSON.stringify(db));
             if(isOnline) dbRef.set(db); 
             uiMods(); 
         }
@@ -708,7 +684,7 @@
         function genQR(t, el) { el.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t)}`; el.classList.remove('oculto'); }
         
         function aplicarLogoGlobal() { if(db && db.config && db.config.logo) { document.querySelectorAll('.logo-sys').forEach(i => { i.src = db.config.logo; i.classList.remove('oculto'); }); } }
-        function toggleMod(m, el) { db.config.mod[m] = el.checked; guardarDB(); if(m === 'ani') crearIconosFlotantes(); alert(`✅ Módulo ${el.checked ? 'ACTIVADO' : 'DESACTIVADO'}.`); }
+        function toggleMod(m, el) { db.config.mod[m] = el.checked; guardarDB(); alert(`✅ Módulo ${el.checked ? 'ACTIVADO' : 'DESACTIVADO'}.`); }
 
         function uiMods() {
             if(!db || !db.config || !db.config.mod) return;
@@ -718,7 +694,7 @@
                 if(document.getElementById(`cm-${k}`)) document.getElementById(`cm-${k}`).checked = m[k];
             });
             if(document.getElementById('cm-ani')) document.getElementById('cm-ani').checked = m.ani;
-            aplicarLogoGlobal(); crearIconosFlotantes();
+            aplicarLogoGlobal(); 
         }
 
         window.onload=()=>{
@@ -747,7 +723,6 @@
         }
         
         function entrarCatalogo() { document.getElementById('pantalla-inicio').classList.add('oculto'); document.getElementById('vista-catalogo').classList.remove('oculto'); if(db.config.notas){document.getElementById('cat-notas-box').innerText=db.config.notas; document.getElementById('cat-notas-box').classList.remove('oculto');} if(refId&&db.config.mod.ref){const c=db.clientes.find(x=>x.id===refId); if(c){document.getElementById('cat-ref-nom').innerText=c.nombre; document.getElementById('cat-ref-box').classList.remove('oculto');}} renCatTabs(); renCat(); }
-        
         function entrarEmpeno() { document.getElementById('pantalla-inicio').classList.add('oculto'); document.getElementById('vista-empenos').classList.remove('oculto'); }
         function enviarSolicitudEmpeno() {
             const nom=document.getElementById('emp-nom').value, tel=document.getElementById('emp-tel').value, desc=document.getElementById('emp-desc').value, mon=document.getElementById('emp-monto').value;
@@ -804,38 +779,16 @@
         function generarReporteMes() {
             let efe=0, bco=0, yap=0, gst=0, prestado=0;
             const mesActual = new Date().getMonth(); const yearActual = new Date().getFullYear();
-
             db.clientes.forEach(c=>{
                 c.creditos.forEach(cr => { if(new Date(cr.fecha).getMonth() === mesActual && new Date(cr.fecha).getFullYear() === yearActual) prestado += cr.monto; });
-                c.historial.forEach(h => {
-                    const fd = new Date(h.fecha);
-                    if(fd.getMonth() === mesActual && fd.getFullYear() === yearActual) {
-                        if(h.metodo === 'Efectivo') efe+=h.monto; else if(h.metodo === 'Banco') bco+=h.monto; else if(h.metodo === 'Yappy/Nequi' || h.metodo === 'Yappy') yap+=h.monto; else efe+=h.monto;
-                    }
-                });
+                c.historial.forEach(h => { const fd = new Date(h.fecha); if(fd.getMonth() === mesActual && fd.getFullYear() === yearActual) { if(h.metodo === 'Efectivo') efe+=h.monto; else if(h.metodo === 'Banco') bco+=h.monto; else if(h.metodo === 'Yappy/Nequi' || h.metodo === 'Yappy') yap+=h.monto; else efe+=h.monto; } });
             });
-
             db.gastos.forEach(g => { const fd = new Date(g.fecha); if(fd.getMonth() === mesActual && fd.getFullYear() === yearActual) gst += g.monto; });
             if(db.config.mod.prv) db.proveedores.forEach(p => { const fd = new Date(p.fecha); if(fd.getMonth() === mesActual && fd.getFullYear() === yearActual) gst += (p.abonado||0); });
-
             let totalIn = efe + bco + yap;
-            document.getElementById('rep-mes-fecha').innerText = `MES: ${mesActual+1} - AÑO: ${yearActual}`;
-            document.getElementById('rep-mes-ingresos').innerText = `$${totalIn.toFixed(2)}`;
-            document.getElementById('rep-mes-efe').innerText = `$${efe.toFixed(2)}`;
-            document.getElementById('rep-mes-bco').innerText = `$${bco.toFixed(2)}`;
-            document.getElementById('rep-mes-yap').innerText = `$${yap.toFixed(2)}`;
-            document.getElementById('rep-mes-egresos').innerText = `$${gst.toFixed(2)}`;
-            document.getElementById('rep-mes-neta').innerText = `$${(totalIn - gst).toFixed(2)}`;
-            document.getElementById('rep-mes-calle').innerText = `$${prestado.toFixed(2)}`;
-
-            document.getElementById('area-impresion').classList.remove('oculto');
-            document.getElementById('print-reporte-mensual').classList.remove('oculto');
-            
-            setTimeout(()=>{ 
-                window.print(); 
-                document.getElementById('area-impresion').classList.add('oculto');
-                document.getElementById('print-reporte-mensual').classList.add('oculto');
-            }, 500);
+            document.getElementById('rep-mes-fecha').innerText = `MES: ${mesActual+1} - AÑO: ${yearActual}`; document.getElementById('rep-mes-ingresos').innerText = `$${totalIn.toFixed(2)}`; document.getElementById('rep-mes-efe').innerText = `$${efe.toFixed(2)}`; document.getElementById('rep-mes-bco').innerText = `$${bco.toFixed(2)}`; document.getElementById('rep-mes-yap').innerText = `$${yap.toFixed(2)}`; document.getElementById('rep-mes-egresos').innerText = `$${gst.toFixed(2)}`; document.getElementById('rep-mes-neta').innerText = `$${(totalIn - gst).toFixed(2)}`; document.getElementById('rep-mes-calle').innerText = `$${prestado.toFixed(2)}`;
+            document.getElementById('area-impresion').classList.remove('oculto'); document.getElementById('print-reporte-mensual').classList.remove('oculto');
+            setTimeout(()=>{ window.print(); document.getElementById('area-impresion').classList.add('oculto'); document.getElementById('print-reporte-mensual').classList.add('oculto'); }, 500);
         }
 
         function busquedaUniversal(t){if(t.length>2){abrirPantalla('pantalla-deudas');renDeudas(t);}}
@@ -856,14 +809,16 @@
             db.config.hFin=document.getElementById('cfg-h-fin').value; 
             db.config.mod.pct=parseFloat(document.getElementById('cfg-comision-pct').value||0); 
             if(db.config.mod.tax) db.config.taxPct=parseFloat(document.getElementById('cfg-tax-pct').value||7); 
-            ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','com','ref','aud','prv','rad','emp','bil','pro'].forEach(k=>{ if(document.getElementById(`cm-${k}`)) db.config.mod[k] = document.getElementById(`cm-${k}`).checked; });
-            guardarDB(); alert("✅ Guardado Exitosamente."); location.reload();
+            ['ani','qr','pwa','fia','gra','cup','stk','pts','pau','slf','tax','com','ref','aud','prv','rad','emp','bil','pro'].forEach(k=>{
+                if(document.getElementById(`cm-${k}`)) db.config.mod[k] = document.getElementById(`cm-${k}`).checked;
+            });
+            guardarDB(); alert("✅ Guardado en Firebase Local y Nube Exitosamente."); location.reload();
         }
 
         function entregarBoveda(){const m=parseFloat(prompt("Efectivo a entregar en bóveda:")); if(!m)return; db.boveda.pendientes.push({id:Date.now(), usr:rol, monto:m, fecha:new Date().toLocaleString()}); guardarDB(); alert("Reporte enviado al Admin.");} function renBov(){document.getElementById('bov-total').innerText=`$${(db.boveda.saldo||0).toFixed(2)}`; const d=document.getElementById('lista-boveda-ui'); d.innerHTML=''; db.boveda.pendientes.forEach((p,i)=>{d.innerHTML+=`<div class="card" style="border-left:4px solid #eab308;"><b>${p.usr}</b> entregó $${p.monto}<button class="btn-main" style="padding:0.75rem; margin-top:0.75rem;" onclick="aprobarBov(${i},${p.monto})"><i class="fas fa-check"></i> Recibir y Cuadrar</button></div>`;});} function aprobarBov(i,m){db.boveda.saldo=(db.boveda.saldo||0)+m; db.boveda.pendientes.splice(i,1); addLog(`Recibió $${m} en Bóveda Central`); guardarDB(); renBov();}
         function guardarProv() { const d=document.getElementById('prv-desc').value, m=parseFloat(document.getElementById('prv-monto').value); if(d&&m){ db.proveedores.push({id:Date.now(), desc:d, monto:m, abonado:0, fecha:new Date().toISOString()}); addLog(`CxP nueva: ${d} $${m}`); guardarDB(); renProv(); document.getElementById('prv-desc').value=''; document.getElementById('prv-monto').value=''; } } 
         let idProv=null; function abrirAbonoProv(i) { idProv=i; document.getElementById('modal-abonar-prov').style.display='flex'; }
-        function procesarAbonoProv() { const m=parseFloat(document.getElementById('abc-prov-monto').value); if(!m)return; const p=db.proveedores[idProv]; p.abonado=(p.abonado||0)+m; p.monto-=m; if(p.monto<=0){db.proveedores.splice(idProv,1);} addLog(`Abonó $${m} a Proveedor: ${p.desc}`); guardarDB(); document.getElementById('modal-abonar-prov').style.display='none'; renProv(); }
+        function procesarAbonoProv() { const m=parseFloat(document.getElementById('abc-prov-monto').value); if(!m)return; const p=db.proveedores[idProv]; p.abonado=(p.abonado||0)+m; p.monto-=m; if(p.monto<=0){db.proveedores.splice(idProv,1);} addLog(`Abonó $${m} a deuda de Proveedor: ${p.desc}`); guardarDB(); document.getElementById('modal-abonar-prov').style.display='none'; renProv(); }
         function renProv(){const d=document.getElementById('lista-prov-ui'); d.innerHTML=''; db.proveedores.forEach((p,i)=>{d.innerHTML+=`<div class="card" style="border-left:4px solid #f97316;"><b style="font-size:1rem;">${p.desc}</b><br><div style="margin-top:0.5rem; font-size:0.875rem; background:#f9fafb; padding:0.5rem; border-radius:0.5rem;">Debe: <b style="color:#ea580c; font-size:1.125rem;">$${p.monto}</b> | Pagado: $${p.abonado||0}</div><button class="btn-outline" style="padding:0.75rem; margin-top:0.75rem; font-size:0.875rem; width:100%;" onclick="abrirAbonoProv(${i})"><i class="fas fa-hand-holding-usd"></i> Abonar a Deuda</button></div>`;});}
         function abrirRadarGlobal() { let cs=[]; db.clientes.forEach(c=>{if(c.lat&&c.lng){let mo=false;c.creditos.forEach(cr=>cr.cuotas.forEach(cu=>{if(new Date(cu.vence)<new Date()&&cu.abonado<cu.val)mo=true;})); cs.push(`markers=color:${mo?'red':'green'}%7Clabel:${c.nombre.charAt(0)}%7C${c.lat},${c.lng}`);}}); const url=`https://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=roadmap&${cs.join('&')}`; document.getElementById('mapa-radar-ui').innerHTML=`<img src="${url}" style="width:100%; height:100%; object-fit:cover;">`; abrirPantalla('pantalla-radar'); }
         function guardarGasto(){const d=document.getElementById('gst-desc').value, m=parseFloat(document.getElementById('gst-monto').value); if(d&&m){db.gastos.push({desc:d, monto:m, fecha:new Date().toISOString()}); addLog(`Egreso/Gasto de $${m}`); guardarDB(); renGastos(); document.getElementById('gst-desc').value=''; document.getElementById('gst-monto').value='';}} function renGastos(){const d=document.getElementById('lista-gastos-ui'); d.innerHTML=''; db.gastos.forEach(g=>d.innerHTML+=`<div class="card" style="border-left:4px solid #ef4444;"><b>${g.desc}</b><span style="float:right; color:#ef4444; font-weight:900; font-size:1.125rem;">-$${g.monto}</span><br><span style="font-size:0.75rem; color:#9ca3af; font-weight:bold; margin-top:0.25rem; display:block;">${new Date(g.fecha).toLocaleDateString()}</span></div>`);}
@@ -871,19 +826,120 @@
         function imprimirCierreCaja(){
             let cobH=0; const hoy=new Date().toLocaleDateString(); db.clientes.forEach(c=>c.historial.forEach(h=>{if(h.usr===rol && new Date(h.fecha).toLocaleDateString()===hoy)cobH+=h.monto;})); const com=db.config.mod.com?cobH*(db.config.mod.pct/100):0; const ent=cobH-com; document.getElementById('cierre-fec').innerText=hoy; document.getElementById('cierre-usr').innerText=rol; document.getElementById('cierre-tot').innerText=`$${cobH.toFixed(2)}`; document.getElementById('cierre-com').innerText=`$${com.toFixed(2)}`; document.getElementById('cierre-entregar').innerText=`$${ent.toFixed(2)}`; 
             document.getElementById('area-impresion').classList.remove('oculto'); document.getElementById('print-cierre').classList.remove('oculto');
-            setTimeout(() => { window.print(); document.getElementById('area-impresion').classList.add('oculto'); document.getElementById('print-cierre').classList.add('oculto'); addLog(`Imprimió cierre de caja`); }, 500);
+            setTimeout(() => { window.print(); document.getElementById('area-impresion').classList.add('oculto'); document.getElementById('print-cierre').classList.add('oculto'); addLog(`Imprimió cierre de caja (${rol})`); }, 500);
         }
 
-        let vPI=null; function verificarPago(i){vPI=i; const p=db.pagosPendientes[i], c=db.clientes.find(x=>x.id===p.cId); document.getElementById('lista-verificacion-ui').innerHTML=`<div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border:2px solid #bfdbfe;"><h3 style="color:#153e36; font-weight:900; margin-bottom:0.75rem; font-size:1.125rem;"><i class="fas fa-university"></i> Revisión de Pago</h3><p style="font-size:0.875rem; background:#eff6ff; padding:0.5rem; border-radius:0.25rem; color:#1e40af; font-weight:bold; margin-bottom:0.75rem;">El cliente <b>${c.nombre}</b> reportó abono a Cuota ${p.cNum}</p><a href="${p.foto}" target="_blank"><img src="${p.foto}" style="width:100%; max-height:12rem; object-fit:contain; background:#f3f4f6; margin-bottom:1rem; border-radius:0.75rem; border:1px solid #e5e7eb;"></a><label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.25rem;">Confirme monto en banco ($):</label><div class="input-group"><input type="number" id="verif-monto" value="${p.monto}" style="font-size:1.25rem; font-weight:bold;"></div><div class="input-group admin-only"><input type="number" id="verif-pronto" placeholder="Descuento Pronto Pago ($)"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="aprobarPagoReportado()"><i class="fas fa-check-circle"></i> Aprobar Transferencia</button><button class="btn-danger" style="width:100%; margin-top:0.75rem; padding:1rem;" onclick="rechazarPagoReportado()"><i class="fas fa-trash"></i> Rechazar y Eliminar</button></div>`; abrirPantalla('pantalla-verificar-pagos');}
-        function aprobarPagoReportado(){const p=db.pagosPendientes[vPI], m=parseFloat(document.getElementById('verif-monto').value), pp=parseFloat(document.getElementById('verif-pronto').value||0), c=db.clientes.find(x=>x.id===p.cId), cr=c.creditos[p.crIdx], cu=cr.cuotas[p.cuIdx]; cu.abonado+=(m+pp); cr.saldo-=(m+pp); if(cr.saldo<0)cr.saldo=0; c.historial.push({cuota:cu.num, monto:m, desc:pp, fecha:new Date().toLocaleString(), usr:'Web', metodo:'Banco'}); if(db.config.mod.pts && cr.saldo===0) c.puntos=(c.puntos||0)+100; db.pagosPendientes.splice(vPI,1); addLog(`Validó pago web de ${c.nombre} por $${m}`); guardarDB(); cerrarPantallas(); alert("✅ Transferencia aprobada.");} function rechazarPagoReportado(){db.pagosPendientes.splice(vPI,1); guardarDB(); cerrarPantallas();}
+        let vPI=null; function verificarPago(i){vPI=i; const p=db.pagosPendientes[i], c=db.clientes.find(x=>x.id===p.cId); document.getElementById('lista-verificacion-ui').innerHTML=`<div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border:2px solid #bfdbfe;"><h3 style="color:#153e36; font-weight:900; margin-bottom:0.75rem; font-size:1.125rem;"><i class="fas fa-university"></i> Revisión de Pago</h3><p style="font-size:0.875rem; background:#eff6ff; padding:0.5rem; border-radius:0.25rem; color:#1e40af; font-weight:bold; margin-bottom:0.75rem;">El cliente <b>${c.nombre}</b> reportó abono a Cuota ${p.cNum}</p><a href="${p.foto}" target="_blank"><img src="${p.foto}" style="width:100%; max-height:12rem; object-fit:contain; background:#f3f4f6; margin-bottom:1rem; border-radius:0.75rem; border:1px solid #e5e7eb;"></a><label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:0.25rem;">Confirme monto en banco ($):</label><div class="input-group"><input type="number" id="verif-monto" value="${p.monto}" style="font-size:1.25rem; font-weight:bold;"></div><div class="input-group admin-only"><input type="number" id="verif-pronto" placeholder="Descuento Pronto Pago ($) (Opcional)"></div><button class="btn-main" style="padding:1rem; font-size:1rem;" onclick="aprobarPagoReportado()"><i class="fas fa-check-circle"></i> Aprobar Transferencia</button><button class="btn-danger" style="width:100%; margin-top:0.75rem; padding:1rem;" onclick="rechazarPagoReportado()"><i class="fas fa-trash"></i> Rechazar y Eliminar</button></div>`; abrirPantalla('pantalla-verificar-pagos');}
+        function aprobarPagoReportado(){const p=db.pagosPendientes[vPI], m=parseFloat(document.getElementById('verif-monto').value), pp=parseFloat(document.getElementById('verif-pronto').value||0), c=db.clientes.find(x=>x.id===p.cId), cr=c.creditos[p.crIdx], cu=cr.cuotas[p.cuIdx]; cu.abonado+=(m+pp); cr.saldo-=(m+pp); if(cr.saldo<0)cr.saldo=0; c.historial.push({cuota:cu.num, monto:m, desc:pp, fecha:new Date().toLocaleString(), usr:'Web', metodo:'Banco'}); if(db.config.mod.pts && cr.saldo===0) c.puntos=(c.puntos||0)+100; db.pagosPendientes.splice(vPI,1); addLog(`Validó pago web de ${c.nombre} por $${m}`); guardarDB(); cerrarPantallas(); alert("✅ Transferencia aprobada y aplicada.");} function rechazarPagoReportado(){db.pagosPendientes.splice(vPI,1); guardarDB(); cerrarPantallas();}
 
-        function renCanjesAdmin() { const d=document.getElementById('lista-canjes-ui'); d.innerHTML=''; db.solicitudesPremios.forEach((p,i)=>{ const c=db.clientes.find(x=>x.id===p.cId); d.innerHTML+=`<div class="card" style="border-left:4px solid #eab308;"><b style="font-size:1.125rem;">${c.nombre}</b><br><span style="font-size:0.875rem;">Quiere canjear: <b style="color:#ca8a04;">${p.premio}</b></span><br><span style="font-size:0.75rem; color:#9ca3af; font-weight:bold; display:block; margin-top:0.25rem;">${p.fecha}</span><div style="margin-top:0.75rem;"><button class="btn-main" style="padding:0.75rem; background:#eab308; color:#111827;" onclick="aprobarCanje(${i})"><i class="fas fa-check"></i> Marcar como Entregado</button></div></div>`; }); } function aprobarCanje(i) { db.solicitudesPremios.splice(i,1); addLog("Entregó un premio"); guardarDB(); renCanjesAdmin(); alert("✅ Premio descontado y entregado."); }
+        // CANJES ADMIN
+        function renCanjesAdmin() { const d=document.getElementById('lista-canjes-ui'); d.innerHTML=''; db.solicitudesPremios.forEach((p,i)=>{ const c=db.clientes.find(x=>x.id===p.cId); d.innerHTML+=`<div class="card" style="border-left:4px solid #eab308;"><b style="font-size:1.125rem;">${c.nombre}</b><br><span style="font-size:0.875rem;">Quiere canjear: <b style="color:#ca8a04;">${p.premio}</b></span><br><span style="font-size:0.75rem; color:#9ca3af; font-weight:bold; display:block; margin-top:0.25rem;">${p.fecha}</span><div style="margin-top:0.75rem;"><button class="btn-main" style="padding:0.75rem; background:#eab308; color:#111827;" onclick="db.solicitudesPremios.splice(${i},1); guardarDB(); renCanjesAdmin(); alert('✅ Premio entregado.');"><i class="fas fa-check"></i> Marcar como Entregado</button></div></div>`; }); }
+
+        // ==============================
+        // MÓDULO EMPEÑOS (NUEVO Y COMPLETO)
+        // ==============================
         function copiarLinkEmpeno() { navigator.clipboard.writeText(window.location.href.split('?')[0]+"?vista=empeno"); alert("✅ Link Copiado. Envíeselo por WhatsApp."); }
-        function renEmpenos() { const d = document.getElementById('lista-empenos-ui'); d.innerHTML=''; db.empenos.forEach((e,i)=>{ if(e.estado==='pendiente') { d.innerHTML+=`<div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border-left:4px solid #eab308; padding:1.25rem;"><h3 style="font-size:1.125rem; font-weight:900; margin-bottom:0.25rem;">${e.nom}</h3><p style="font-size:0.875rem; font-weight:bold; color:#6b7280;"><i class="fab fa-whatsapp" style="color:#22c55e;"></i> ${e.tel}</p><div style="margin:0.75rem 0; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">Artículo:<br><b style="font-size:1rem; color:#1f2937;">${e.desc}</b><br><br>Pide:<br><b style="font-size:1.25rem; color:#ca8a04; font-weight:900;">$${e.monto}</b></div><a href="${e.foto}" target="_blank"><img src="${e.foto}" style="width:100%; height:10rem; object-fit:cover; border-radius:0.75rem; margin-top:0.5rem; border:1px solid #d1d5db;"></a><button class="btn-main" style="margin-top:1rem; padding:1rem; font-size:1rem; background:#eab308; color:#111827;" onclick="db.empenos[${i}].estado='visto'; guardarDB(); renEmpenos();"><i class="fas fa-check-double"></i> Archivar</button></div>`; } }); }
+        
+        function renEmpenos() { 
+            const d = document.getElementById('lista-empenos-ui'); d.innerHTML=''; 
+            db.empenos.forEach((e,i)=>{ 
+                if(e.estado==='pendiente') { 
+                    d.innerHTML+=`
+                    <div class="card" style="box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); border-left:4px solid #eab308; padding:1.25rem;">
+                        <h3 style="font-size:1.125rem; font-weight:900; margin-bottom:0.25rem;">${e.nom}</h3>
+                        <p style="font-size:0.875rem; font-weight:bold; color:#6b7280;"><i class="fab fa-whatsapp" style="color:#22c55e;"></i> ${e.tel}</p>
+                        <div style="margin:0.75rem 0; background:#f9fafb; padding:0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb;">
+                            Artículo:<br><b style="font-size:1rem; color:#1f2937;">${e.desc}</b><br><br>Pide:<br><b style="font-size:1.25rem; color:#ca8a04; font-weight:900;">$${e.monto}</b>
+                        </div>
+                        <a href="${e.foto}" target="_blank"><img src="${e.foto}" style="width:100%; height:10rem; object-fit:cover; border-radius:0.75rem; margin-top:0.5rem; border:1px solid #d1d5db;"></a>
+                        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                            <button class="btn-main" style="background:#eab308; color:#111827; padding:1rem; flex:1;" onclick="aprobarEmpeno(${i})"><i class="fas fa-check-circle"></i> Aprobar</button>
+                            <button class="btn-danger" style="padding:1rem; flex:1;" onclick="rechazarEmpeno(${i})"><i class="fas fa-times-circle"></i> Rechazar</button>
+                        </div>
+                    </div>`; 
+                } 
+            }); 
+        }
+
+        function aprobarEmpeno(i) {
+            const e = db.empenos[i];
+            const m = parseFloat(prompt(`APROBAR EMPEÑO: ¿Cuál será el MONTO TOTAL a cobrarle a ${e.nom}? (Incluyendo sus intereses)`, e.monto));
+            if(!m) return alert("Aprobación cancelada.");
+            const c = parseInt(prompt(`¿En cuántas CUOTAS dividirá los $${m}?`, "4"));
+            if(!c) return alert("Aprobación cancelada.");
+            const f = prompt(`¿Frecuencia de pago? (Escriba: Diario, Semanal, Quincenal o Mensual)`, "Quincenal");
+            if(!f || !['Diario','Semanal','Quincenal','Mensual'].includes(f)) return alert("Frecuencia inválida. Cancelado.");
+
+            // 1. Busca si el cliente existe, si no, lo crea.
+            let cli = db.clientes.find(x => x.telefono === e.tel || x.nombre.toLowerCase() === e.nom.toLowerCase());
+            if(!cli) {
+                cli = {id: 'CLI'+Date.now(), cedula: 'N/A', nombre: e.nom, telefono: e.tel, direccion: 'Creado por Empeño', fiador: '', limite: 1000, nota: 'Viene del módulo empeños', lat: '', lng: '', urlMapa: '', notaColor: 'verde', notaPortal: '', billetera: 0, puntos: 0, listaNegra: false, enLegal: false, creditos: [], gestiones: [], historial: []};
+                db.clientes.push(cli);
+            }
+
+            // 2. Genera el Plan de Pagos
+            let cuotas = [];
+            const valC = m / c;
+            const hoy = new Date();
+            for(let j=1; j<=c; j++){
+                let v = new Date(hoy);
+                if(f==='Diario') v.setDate(v.getDate()+j);
+                else if(f==='Semanal') v.setDate(v.getDate()+(7*j));
+                else if(f==='Quincenal') v.setDate(v.getDate()+(15*j));
+                else v.setMonth(v.getMonth()+j);
+                cuotas.push({num: j, val: valC, abonado: 0, vence: v.toISOString().split('T')[0]});
+            }
+
+            // 3. Añade el crédito al cliente
+            cli.creditos.push({
+                id: Date.now(),
+                producto: 'EMPEÑO: ' + e.desc,
+                imei: 'N/A',
+                monto: m,
+                saldo: m,
+                frec: f,
+                moraMonto: 0,
+                moraFrec: 1,
+                cuotas: cuotas,
+                fecha: hoy.toISOString()
+            });
+
+            // 4. Agrega el dinero prestado como un "Egreso" automático de la caja
+            db.gastos.push({desc: `Préstamo por Empeño (${e.nom})`, monto: parseFloat(e.monto), fecha: hoy.toISOString()});
+
+            db.empenos[i].estado = 'aprobado';
+            addLog(`Aprobó empeño de ${e.nom} y generó préstamo de $${e.monto}`);
+            guardarDB();
+            renEmpenos();
+            alert("✅ ¡Empeño Aprobado! El crédito y plan de pagos ya están activos en la cuenta del cliente. El dinero prestado se ha descontado de su caja.");
+        }
+
+        function rechazarEmpeno(i) {
+            if(confirm("¿Está seguro de rechazar esta solicitud de empeño?")) {
+                db.empenos[i].estado = 'rechazado';
+                guardarDB(); renEmpenos();
+            }
+        }
 
         function simularCuota(){const m=parseFloat(document.getElementById('sim-monto').value), i=parseFloat(document.getElementById('sim-int').value||0), c=parseInt(document.getElementById('sim-cuotas').value), f=document.getElementById('sim-frec').value, tb=document.getElementById('sim-tabla-cuotas'); tb.innerHTML=''; if(m&&c){let tot=m+(m*(i/100)); if(db.config.mod.tax)tot+=(tot*(db.config.taxPct/100)); const val=tot/c; document.getElementById('sim-res-cuota').innerText=`$${val.toFixed(2)}`; let fh=new Date(); for(let x=1;x<=c;x++){if(f==='Diario')fh.setDate(fh.getDate()+1); else if(f==='Semanal')fh.setDate(fh.getDate()+7); else if(f==='Quincenal')fh.setDate(fh.getDate()+15); else fh.setMonth(fh.getMonth()+1); tb.innerHTML+=`<div style="display:flex; justify-content:space-between; border-bottom:1px solid #e5e7eb; padding:0.75rem; font-size:0.75rem;"><span>Cuota ${x}</span><span style="font-weight:bold; color:#6b7280;">${fh.toLocaleDateString()}</span><b style="color:#50a38d;">$${val.toFixed(2)}</b></div>`;}}}
         
-        let tf=[]; function procesarFotosProd(e){tf=[]; document.getElementById('prod-fotos-preview').innerHTML=''; Array.from(e.target.files).slice(0,3).forEach(f=>{pFoto(f, b64=>{tf.push(b64); document.getElementById('prod-fotos-preview').innerHTML+=`<img src="${b64}" style="width:5rem; height:5rem; object-fit:cover; border-radius:0.75rem; border:1px solid #e5e7eb;">`;});});} function agregarFilaPlazo(){const id=Date.now(); document.getElementById('lista-plazos-inputs').innerHTML+=`<div class="input-group" id="plz-${id}" style="gap:0.25rem; border:none; flex-wrap:wrap;"><input type="number" placeholder="Plazo" class="inp-plz" style="border:1px solid #ddd; width:48%;"><select class="inp-frec" style="border:1px solid #ddd; width:48%;"><option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option></select><input type="number" placeholder="Precio ($)" class="inp-pre" style="border:1px solid #ddd; width:75%;"><button class="btn-danger" style="width:20%;" onclick="document.getElementById('plz-${id}').remove()"><i class="fas fa-trash"></i></button></div>`;}
+        // LA SOLUCIÓN AL ERROR DE AÑADIR PLANES EN PRODUCTOS: insertAdjacentHTML
+        let tf=[]; function procesarFotosProd(e){tf=[]; document.getElementById('prod-fotos-preview').innerHTML=''; Array.from(e.target.files).slice(0,3).forEach(f=>{pFoto(f, b64=>{tf.push(b64); document.getElementById('prod-fotos-preview').innerHTML+=`<img src="${b64}" style="width:5rem; height:5rem; object-fit:cover; border-radius:0.75rem; border:1px solid #e5e7eb;">`;});});} 
+        function agregarFilaPlazo() {
+            const id = Date.now();
+            const filaHTML = `
+                <div class="input-group" id="plz-${id}" style="gap:0.25rem; border:none; flex-wrap:wrap;">
+                    <input type="number" placeholder="Plazo" class="inp-plz" style="border:1px solid #ddd; width:48%;">
+                    <select class="inp-frec" style="border:1px solid #ddd; width:48%;">
+                        <option value="Diario">Diario</option><option value="Semanal">Semanal</option><option value="Quincenal" selected>Quincenal</option><option value="Mensual">Mensual</option>
+                    </select>
+                    <input type="number" placeholder="Precio ($)" class="inp-pre" style="border:1px solid #ddd; width:75%;">
+                    <button class="btn-danger" style="width:20%;" onclick="document.getElementById('plz-${id}').remove()"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            document.getElementById('lista-plazos-inputs').insertAdjacentHTML('beforeend', filaHTML);
+        }
+
         function guardarProducto(){const n=document.getElementById('prod-nom').value; const cat=document.getElementById('prod-cat').value; const stk=parseInt(document.getElementById('prod-stock').value||0); if(!n) return alert("❌ Escriba el nombre."); let o=[]; document.querySelectorAll('#lista-plazos-inputs .input-group').forEach(r=>{const p=r.querySelector('.inp-plz').value; const f=r.querySelector('.inp-frec').value; const pr=parseFloat(r.querySelector('.inp-pre').value); if(p && pr) o.push({plazo:p,frec:f,precio:pr});}); if(o.length === 0) return alert("❌ Añada al menos un Plan (Plazo y Precio)."); db.productos.push({id:Date.now(),nom:n,cat:cat,stock:stk,fotos:tf,opciones:o}); addLog(`Añadió producto ${n}`); guardarDB(); renderProdAdmin(); document.getElementById('prod-nom').value=''; document.getElementById('lista-plazos-inputs').innerHTML=''; document.getElementById('prod-fotos-preview').innerHTML=''; tf=[]; alert("✅ Publicado.");} 
         function renderProdAdmin(){const d=document.getElementById('lista-productos-admin'); d.innerHTML=''; db.productos.forEach((p,i)=>{let img=p.fotos.length>0?`<img src="${p.fotos[0]}" style="width:4rem; height:4rem; object-fit:cover; border-radius:0.75rem; border:1px solid #f3f4f6; margin-right:1rem;">`:''; d.innerHTML+=`<div class="card" style="display:flex; align-items:center;">${img}<div style="flex:1;"><b style="font-size:0.875rem; color:#153e36;">${p.nom}</b><br><span style="font-size:0.75rem; color:#9333ea; font-weight:900;">${p.cat} ${db.config.mod.stk?`| STOCK: ${p.stock}`:''}</span></div><button class="btn-danger" style="padding:0.75rem 1rem;" onclick="if(confirm('¿Eliminar producto?')){db.productos.splice(${i},1); guardarDB(); renderProdAdmin();}"><i class="fas fa-trash"></i></button></div>`;});}
 
@@ -896,6 +952,62 @@
         function calcScore(c) { if(c.listaNegra) return 1; if(c.enLegal) return 2; let p=0, a=0; c.creditos.forEach(cr=>cr.cuotas.forEach(cu=>{p++; if(cu.abonado>=cu.val)a++;})); if(p===0) return 3; const r=a/p; if(r>0.9) return 5; if(r>0.6) return 4; if(r>0.3) return 3; return 2; }
         function drawStars(s) { let str=''; for(let i=0;i<5;i++) str+= i<s ? '<i class="fas fa-star" style="color:#facc15;"></i>' : '<i class="far fa-star" style="color:#d1d5db;"></i>'; return str; }
 
+        // ==========================================
+        // SISTEMA DE IMPRESIÓN BLUETOOTH RAWBT
+        // ==========================================
+        function imprimirRawBT(textoFormateado) {
+            // Convierte el texto para enviarlo a la App RawBT nativa de Android
+            let url = "intent:" + encodeURIComponent(textoFormateado) + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
+            window.location.href = url;
+        }
+
+        // LÓGICA DE COBRO (ACTUALIZADA CON IMPRESIÓN RAWBT)
+        let crA=null, cuA=null; 
+        function abrirAbono(icr, icu, debe){crA=icr; cuA=icu; document.getElementById('abc-num').innerText=`Cuota ${icu+1}`; document.getElementById('abc-debe').innerText=`$${debe.toFixed(2)}`; document.getElementById('abc-monto').value=debe.toFixed(2); document.getElementById('abc-pronto').value=''; const c=db.clientes.find(x=>x.id===clA); if(db.config.mod.ref&&c.billetera>0){document.getElementById('caja-usar-billetera').classList.remove('oculto'); document.getElementById('abc-billetera-disp').innerText=`$${c.billetera}`;}else document.getElementById('caja-usar-billetera').classList.add('oculto'); document.getElementById('modal-abonar-custom').style.display='flex';}
+        
+        function procesarPagoManual(){
+            let m=parseFloat(document.getElementById('abc-monto').value); if(isNaN(m))return; 
+            const desc=parseFloat(document.getElementById('abc-pronto').value||0); 
+            const met=document.getElementById('abc-metodo')?document.getElementById('abc-metodo').value:'Efectivo'; 
+            const c=db.clientes.find(x=>x.id===clA); const cr=c.creditos[crA]; const cu=cr.cuotas[cuA]; 
+            
+            let pB=0; if(db.config.mod.ref && document.getElementById('abc-usar-bil').checked && c.billetera>0){ if(c.billetera>=m){pB=m; c.billetera-=m; m=0;}else{pB=c.billetera; m-=c.billetera; c.billetera=0;} }
+            
+            cu.abonado+=(m+desc+pB); cr.saldo-=(m+desc+pB); if(cr.saldo<0)cr.saldo=0; 
+            c.historial.push({cuota:cu.num,monto:(m+desc+pB),fecha:new Date().toLocaleString(),usr:rol, metodo:met}); 
+            if(db.config.mod.pts && cr.saldo===0) c.puntos=(c.puntos||0)+100; 
+            
+            addLog(`Cobró $${m} a ${c.nombre} via ${met}`); 
+            guardarDB(); 
+            document.getElementById('modal-abonar-custom').style.display='none';
+            verDetalle(clA);
+
+            // Generar Texto para RawBT
+            let tx = 0;
+            if(db.config.mod.tax) { tx = (m+pB)*(db.config.taxPct/100); }
+            
+            let textoTicket = `
+=== RECIBO OFICIAL ===
+Fecha: ${new Date().toLocaleString()}
+Atiende: ${rol}
+----------------------
+Cliente: ${c.nombre}
+Producto: ${cr.producto}
+Cuota Pagada: ${cu.num}
+----------------------
+Monto Recibido: $${(m+pB).toFixed(2)}
+Descuento: -$${desc.toFixed(2)}
+Subtotal: $${(m+pB-tx).toFixed(2)}
+Impuestos: $${tx.toFixed(2)}
+----------------------
+NUEVO SALDO: $${cr.saldo.toFixed(2)}
+
+¡Gracias por su pago!
+`;
+            if(confirm("✅ Pago Exitoso.\n\n¿Desea imprimir el recibo usando RawBT Thermal Printer?")) {
+                imprimirRawBT(textoTicket);
+            }
+        }
     </script>
 </body>
 </html>
